@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  background-color: #0A192F;
+  color: white;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  /* text-rendering: optimizeLegibility; - Default is usually best on Windows for standard UI fonts */
+  /* -webkit-font-smoothing: antialiased; - Let browser decide for max sharpness */
+}
+
+body {
+  @apply bg-deep-navy text-white overflow-hidden m-0 p-0 w-screen h-screen;
+}
+
+/* Custom scrollbar for "Toy" feel later if needed */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A192F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #58CC02;
+  border-radius: 10px;
+}
+
+.drag-region {
+  -webkit-app-region: drag;
+}
+
+.no-drag-region {
+  -webkit-app-region: no-drag;
+}
