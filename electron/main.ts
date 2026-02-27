@@ -76,6 +76,15 @@ ipcMain.handle('load-profile', async (_event, gameId) => {
   return store.get(`profiles.${gameId}`, null);
 })
 
+ipcMain.handle('get-language', async () => {
+  return store.get('language', 'en');
+})
+
+ipcMain.handle('set-language', async (_event, lang: string) => {
+  store.set('language', lang);
+  return true;
+})
+
 // DisplayTuner process queue: prevents concurrent calls that cause missed updates
 let tunerRunning = false;
 let pendingProfile: any = null;

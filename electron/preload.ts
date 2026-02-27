@@ -38,4 +38,6 @@ contextBridge.exposeInMainWorld('gameVisionAPI', {
     // Return cleanup function
     return () => ipcRenderer.removeListener('steam-library-updated', handler);
   },
+  getLanguage: () => ipcRenderer.invoke('get-language'),
+  setLanguage: (lang: string) => ipcRenderer.invoke('set-language', lang),
 })

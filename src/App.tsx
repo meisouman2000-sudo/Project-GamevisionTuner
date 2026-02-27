@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { GameCard } from './components/GameCard'
 import { SettingsModal } from './components/SettingsModal'
 import { TitleBar } from './components/TitleBar'
-import { Plus, Search, Monitor, Sliders } from 'lucide-react'
+import { LanguageProvider, useLanguage, useT } from './i18n-context'
+import { Plus, Search, Monitor, Sliders, Globe } from 'lucide-react'
 
 interface Game {
   id: string;
@@ -12,7 +13,7 @@ interface Game {
   lastPlayed?: number;
 }
 
-function App() {
+function AppContent() {
   const [allGames, setAllGames] = useState<Game[]>([]); // Store all fetched games
   const [displayedGames, setDisplayedGames] = useState<Game[]>([]); // Games shown in grid
   const [loading, setLoading] = useState(true);
@@ -25,6 +26,9 @@ function App() {
 
   /* State for launching feedback to prevent double-clicks */
   const [launchingGameId, setLaunchingGameId] = useState<string | null>(null);
+
+  const { language, setLanguage } = useLanguage();
+  const t = useT();
 
   useEffect(() => {
     // Load games from Electron API
@@ -153,11 +157,11 @@ function App() {
         // 3. Launch Game (pass installDir for auto-restore monitoring)
         const result = await window.gameVisionAPI.launchGame(gameId, game?.installDir);
         if (result && !result.success) {
-          alert(`Failed to launch game: ${result.error || 'Unknown error'}`);
+          alert(`${t('launchFailed')}: ${result.error || 'Unknown error'}`);
         }
       } catch (error) {
         console.error("Launch error:", error);
-        alert("Failed to launch game. Check console for details.");
+        alert(t('launchFailed'));
       }
     }
 
@@ -186,8 +190,7 @@ function App() {
   const handleRestoreDefaults = async () => {
     if (window.gameVisionAPI) {
       await window.gameVisionAPI.restoreDefaultSettings();
-      // Ideally we would also clear the visual state if the UI reflected global settings
-      alert("Display settings restored to default.");
+      alert(t('settingsRestored'));
     }
   }
 
@@ -235,6 +238,10 @@ function App() {
     }
   }
 
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'ja' : 'en');
+  };
+
   return (
     <div className="h-screen bg-deep-navy text-white overflow-hidden flex flex-col selection:bg-electric-cyan selection:text-deep-navy">
       <TitleBar />
@@ -261,19 +268,33 @@ function App() {
             </div>
           </motion.div>
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleRestoreDefaults}
-            className="flex items-center gap-2 bg-[#ff0055] text-white px-6 py-3 rounded-xl font-bold shadow-[0_4px_0_#990033] active:shadow-none active:translate-y-[4px] transition-all hover:bg-[#ff1a66]"
-          >
-            <span className="text-xl">🏠</span> RESET TO DEFAULT
-          </motion.button>
+          <div className="flex items-center gap-3">
+            {/* Language Toggle */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleLanguage}
+              className="flex items-center gap-2 bg-[#112240] text-electric-cyan px-4 py-3 rounded-xl font-bold border border-electric-cyan/20 hover:border-electric-cyan/50 transition-all"
+            >
+              <Globe size={18} />
+              <span className="text-sm">{language === 'en' ? 'EN' : 'JA'}</span>
+            </motion.button>
+
+            {/* Reset Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleRestoreDefaults}
+              className="flex items-center gap-2 bg-[#ff0055] text-white px-6 py-3 rounded-xl font-bold shadow-[0_4px_0_#990033] active:shadow-none active:translate-y-[4px] transition-all hover:bg-[#ff1a66]"
+            >
+              <span className="text-xl">{'\u{1F3E0}'}</span> {t('resetToDefault')}
+            </motion.button>
+          </div>
         </header>
 
         {/* Library Header */}
         <div className="flex items-center gap-2 mb-6 px-2">
-          <h2 className="text-2xl font-bold text-white tracking-wide">LIBRARY</h2>
+          <h2 className="text-2xl font-bold text-white tracking-wide">{t('library')}</h2>
           <div className="h-1 flex-1 bg-white/10 rounded-full ml-4" />
         </div>
 
@@ -287,7 +308,7 @@ function App() {
                   transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
                   className="w-12 h-12 border-4 border-electric-cyan border-t-transparent rounded-full"
                 />
-                <p className="text-electric-cyan font-bold tracking-widest animate-pulse">SCANNING MAINFRAME...</p>
+                <p className="text-electric-cyan font-bold tracking-widest animate-pulse">{t('scanning')}</p>
               </div>
             </div>
           ) : (
@@ -315,7 +336,7 @@ function App() {
                 <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-electric-cyan/20 transition-colors">
                   <Plus size={32} className="text-white/30 group-hover:text-electric-cyan" />
                 </div>
-                <span className="font-bold text-white/30 group-hover:text-white uppercase tracking-wider">Add Game</span>
+                <span className="font-bold text-white/30 group-hover:text-white uppercase tracking-wider">{t('addGame')}</span>
               </motion.button>
             </>
           )}
@@ -351,12 +372,12 @@ function App() {
                   className="bg-deep-navy w-[600px] h-[80vh] rounded-3xl border-4 border-[#1a365d] shadow-2xl overflow-hidden flex flex-col pointer-events-auto"
                 >
                   <div className="p-6 border-b border-white/5 bg-[#0d1b2a]">
-                    <h3 className="text-xl font-bold text-white mb-4">Add Game to Library</h3>
+                    <h3 className="text-xl font-bold text-white mb-4">{t('addGameToLibrary')}</h3>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={20} />
                       <input
                         type="text"
-                        placeholder="Search your library..."
+                        placeholder={t('searchLibrary')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-[#112240] text-white pl-10 pr-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-electric-cyan/50 placeholder:text-white/20 font-bold"
@@ -367,7 +388,7 @@ function App() {
                   <div className="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
                     {availableGames.length === 0 ? (
                       <div className="text-center py-10 text-white/30">
-                        No matching games found.
+                        {t('noGamesFound')}
                       </div>
                     ) : (
                       availableGames.map(game => (
@@ -376,8 +397,7 @@ function App() {
                             {/* Placeholder/Bg for transparency */}
                             <div className="absolute inset-0 bg-gradient-to-br from-[#0d1b2a] to-[#1a365d]" />
                             <img
-                              src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.id}/header.jpg`} // Use header.jpg instead of capsule for better aspect ratio compatibility or keep capsule? Capsule is 120x45 usually.
-                              // Actually capsule_sm_120 is 120x45. 
+                              src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.id}/header.jpg`}
                               alt={game.title}
                               className="absolute inset-0 w-full h-full object-cover"
                               onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><rect width="1" height="1" fill="%231a365d"/></svg>' }}
@@ -386,15 +406,15 @@ function App() {
                           <div className="flex-1">
                             <h4 className="font-bold text-white">
                               {game.title}
-                              {displayedGames.find(d => d.id === game.id) && <span className="ml-2 text-xs text-electric-cyan">(Added)</span>}
+                              {displayedGames.find(d => d.id === game.id) && <span className="ml-2 text-xs text-electric-cyan">{t('added')}</span>}
                             </h4>
-                            <p className="text-xs text-white/40">Last Played: {game.lastPlayed ? new Date(game.lastPlayed * 1000).toLocaleDateString() : 'Never'}</p>
+                            <p className="text-xs text-white/40">{t('lastPlayed')}: {game.lastPlayed ? new Date(game.lastPlayed * 1000).toLocaleDateString() : t('never')}</p>
                           </div>
                           <button
                             onClick={() => handleAddGame(game)}
                             className="bg-electric-cyan text-deep-navy px-4 py-2 rounded-lg font-bold opacity-0 group-hover:opacity-100 transition-all hover:scale-105"
                           >
-                            ADD
+                            {t('add')}
                           </button>
                         </div>
                       ))
@@ -402,7 +422,7 @@ function App() {
                   </div>
 
                   <div className="p-4 border-t border-white/5 bg-[#0d1b2a] flex justify-end">
-                    <button onClick={() => setIsAddModalOpen(false)} className="text-white/50 hover:text-white font-bold px-4 py-2">Close</button>
+                    <button onClick={() => setIsAddModalOpen(false)} className="text-white/50 hover:text-white font-bold px-4 py-2">{t('close')}</button>
                   </div>
                 </motion.div>
               </div>
@@ -412,6 +432,14 @@ function App() {
       </div>
     </div>
   )
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
 }
 
 export default App

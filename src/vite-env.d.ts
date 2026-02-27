@@ -31,5 +31,7 @@ interface Window {
         getActiveGames: () => Promise<string[] | null>;
         updateActiveGames: (gameIds: string[]) => Promise<boolean>;
         onSteamLibraryUpdated: (callback: (games: Game[]) => void) => (() => void);
+        getLanguage: () => Promise<string>;
+        setLanguage: (lang: string) => Promise<boolean>;
     }
 }

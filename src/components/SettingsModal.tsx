@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import React, { useState, useEffect } from 'react';
 import { Settings, Sun, Moon, Zap, Target } from 'lucide-react';
+import { useT } from '../i18n-context';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -13,6 +14,7 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose, gameTitle, gameId, initialProfile, onSave, onPreview }: SettingsModalProps) {
+    const t = useT();
     const [brightness, setBrightness] = useState(50);
     const [contrast, setContrast] = useState(50);
     const [gamma, setGamma] = useState(100); // 1.00 = 100%
@@ -100,20 +102,20 @@ export function SettingsModal({ isOpen, onClose, gameTitle, gameId, initialProfi
                                         }}
                                     >
                                         <div className="w-full h-full flex items-center justify-center text-white/20 font-black text-4xl uppercase tracking-widest">
-                                            Preview
+                                            {t('preview')}
                                         </div>
                                     </div>
                                     <div className="absolute top-2 right-2 bg-black/50 px-2 py-1 rounded text-xs text-white/70 font-mono">
-                                        Realtime
+                                        {t('realtime')}
                                     </div>
                                 </div>
 
                                 {/* Sliders */}
                                 <div className="space-y-6">
-                                    <ToySlider label="Brightness" icon={<Sun size={16} />} value={brightness} onChange={setBrightness} color="text-yellow-400" />
-                                    <ToySlider label="Contrast" icon={<Moon size={16} />} value={contrast} onChange={setContrast} color="text-white" />
-                                    <ToySlider label="Gamma" icon={<Target size={16} />} value={gamma} onChange={setGamma} color="text-green-400" isGamma />
-                                    <ToySlider label="Digital Vibrance" icon={<Zap size={16} />} value={digitalVibrance} onChange={setDigitalVibrance} color="text-panic-pink" />
+                                    <ToySlider label={t('brightness')} icon={<Sun size={16} />} value={brightness} onChange={setBrightness} color="text-yellow-400" />
+                                    <ToySlider label={t('contrast')} icon={<Moon size={16} />} value={contrast} onChange={setContrast} color="text-white" />
+                                    <ToySlider label={t('gamma')} icon={<Target size={16} />} value={gamma} onChange={setGamma} color="text-green-400" isGamma />
+                                    <ToySlider label={t('digitalVibrance')} icon={<Zap size={16} />} value={digitalVibrance} onChange={setDigitalVibrance} color="text-panic-pink" />
                                 </div>
 
                                 {/* Actions */}
@@ -122,7 +124,7 @@ export function SettingsModal({ isOpen, onClose, gameTitle, gameId, initialProfi
                                         onClick={onClose}
                                         className="flex-1 py-3 rounded-xl font-bold text-white/50 hover:text-white/80 hover:bg-white/5 transition-colors"
                                     >
-                                        Cancel
+                                        {t('cancel')}
                                     </button>
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
@@ -130,7 +132,7 @@ export function SettingsModal({ isOpen, onClose, gameTitle, gameId, initialProfi
                                         onClick={handleSave}
                                         className="flex-[2] py-4 bg-juicy-green text-deep-navy font-black rounded-xl shadow-[0_4px_0_#3e8e01] active:shadow-none active:translate-y-[4px] transition-all uppercase tracking-wider"
                                     >
-                                        Save Profile
+                                        {t('saveProfile')}
                                     </motion.button>
                                 </div>
                             </div>

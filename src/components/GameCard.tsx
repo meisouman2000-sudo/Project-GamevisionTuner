@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Settings, X } from 'lucide-react';
+import { useT } from '../i18n-context';
 
 interface GameCardProps {
     id: string;
@@ -36,6 +37,7 @@ function getImageUrls(appId: string, headerImageUrl?: string): string[] {
 const PLACEHOLDER_SVG = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="460" height="215" viewBox="0 0 460 215"><rect width="460" height="215" fill="%230A192F"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2300F3FF" font-size="24" font-family="sans-serif">GAME</text></svg>';
 
 export function GameCard({ id, title, profileName, isLaunching, headerImageUrl, onPlay, onSettings, onRemove }: GameCardProps) {
+    const t = useT();
     const imageUrls = getImageUrls(id, headerImageUrl);
     const [imgIndex, setImgIndex] = useState(0);
     const [usePlaceholder, setUsePlaceholder] = useState(false);
@@ -85,7 +87,7 @@ export function GameCard({ id, title, profileName, isLaunching, headerImageUrl, 
                     <button
                         onClick={(e) => { e.stopPropagation(); onRemove(); }}
                         className="absolute top-3 left-3 w-6 h-6 bg-red-500/80 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-10"
-                        title="Remove Game"
+                        title={t('removeGame')}
                     >
                         <X size={14} />
                     </button>
@@ -109,9 +111,9 @@ export function GameCard({ id, title, profileName, isLaunching, headerImageUrl, 
                             }`}
                     >
                         {isLaunching ? (
-                            <>Running...</>
+                            <>{t('running')}</>
                         ) : (
-                            <> <Play size={16} fill="currentColor" /> GO! </>
+                            <> <Play size={16} fill="currentColor" /> {t('go')} </>
                         )}
                     </motion.button>
 
