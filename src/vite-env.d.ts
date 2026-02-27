@@ -14,6 +14,7 @@ interface Game {
     installDir: string;
     lastPlayed?: number;
     executable?: string;
+    headerImageUrl?: string; // From Steam Store API
 }
 
 interface Window {
@@ -29,5 +30,6 @@ interface Window {
         closeWindow: () => Promise<void>;
         getActiveGames: () => Promise<string[] | null>;
         updateActiveGames: (gameIds: string[]) => Promise<boolean>;
+        onSteamLibraryUpdated: (callback: (games: Game[]) => void) => (() => void);
     }
 }

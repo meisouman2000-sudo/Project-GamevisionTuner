@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Settings, X } from 'lucide-react';
 
@@ -6,14 +7,55 @@ interface GameCardProps {
     title: string;
     profileName?: string;
     isLaunching?: boolean; // New prop
+    headerImageUrl?: string; // From Steam Store API
     onPlay: () => void;
     onSettings: () => void;
     onRemove?: () => void;
 }
 
-export function GameCard({ id, title, profileName, isLaunching, onPlay, onSettings, onRemove }: GameCardProps) {
-    // Steam header image URL
-    const coverUrl = `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/header.jpg`;
+// Fallback image URLs to try in order
+function getImageUrls(appId: string, headerImageUrl?: string): string[] {
+    const cdn = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}`;
+    const urls: string[] = [];
+
+    // If we have a Store API URL, use it first (new hash-based format)
+    if (headerImageUrl) {
+        urls.push(headerImageUrl);
+    }
+
+    // Traditional CDN URLs as fallbacks
+    urls.push(
+        `${cdn}/header.jpg`,
+        `${cdn}/capsule_616x353.jpg`,
+        `${cdn}/library_600x900.jpg`,
+        `${cdn}/capsule_231x87.jpg`,
+    );
+    return urls;
+}
+
+const PLACEHOLDER_SVG = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="460" height="215" viewBox="0 0 460 215"><rect width="460" height="215" fill="%230A192F"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2300F3FF" font-size="24" font-family="sans-serif">GAME</text></svg>';
+
+export function GameCard({ id, title, profileName, isLaunching, headerImageUrl, onPlay, onSettings, onRemove }: GameCardProps) {
+    const imageUrls = getImageUrls(id, headerImageUrl);
+    const [imgIndex, setImgIndex] = useState(0);
+    const [usePlaceholder, setUsePlaceholder] = useState(false);
+
+    // Reset index when headerImageUrl changes (e.g. loaded from API later)
+    useEffect(() => {
+        setImgIndex(0);
+        setUsePlaceholder(false);
+    }, [headerImageUrl]);
+
+    const handleImageError = () => {
+        if (imgIndex < imageUrls.length - 1) {
+            setImgIndex(prev => prev + 1);
+        } else {
+            // All URLs exhausted, show placeholder
+            setUsePlaceholder(true);
+        }
+    };
+
+    const currentSrc = usePlaceholder ? PLACEHOLDER_SVG : imageUrls[imgIndex];
 
     return (
         <div
@@ -25,12 +67,10 @@ export function GameCard({ id, title, profileName, isLaunching, onPlay, onSettin
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0d1b2a] to-[#112240] opacity-100" />
 
                 <img
-                    src={coverUrl}
+                    src={currentSrc}
                     alt={title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 relative z-10"
-                    onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><rect width="24" height="24" fill="%230A192F"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="4">GAME</text></svg>';
-                    }}
+                    onError={handleImageError}
                 />
 
                 {/* Profile Tag (Capsule) */}

@@ -44,7 +44,7 @@ export function SettingsModal({ isOpen, onClose, gameTitle, gameId, initialProfi
 
         const timer = setTimeout(() => {
             onPreview({ brightness, contrast, gamma, digitalVibrance });
-        }, 150); // 150ms debounce to prevent freezing
+        }, 250); // 250ms debounce - balanced for responsiveness vs backend stability
         return () => clearTimeout(timer);
     }, [brightness, contrast, gamma, digitalVibrance, onPreview, isOpen]);
 

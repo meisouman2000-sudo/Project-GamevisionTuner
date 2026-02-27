@@ -12,6 +12,7 @@ export interface Game {
     installDir: string;
     lastPlayed?: number;
     executable?: string;
+    headerImageUrl?: string; // From Steam Store API (new hash-based URL format)
 }
 
 export async function getSteamPath(): Promise<string> {
@@ -109,6 +110,70 @@ export async function scanSteamGames(): Promise<Game[]> {
     }
 
     // Sort by LastPlayed descending
-    return Array.from(gamesMap.values())
+    const games = Array.from(gamesMap.values())
         .sort((a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0));
+
+    // Fetch header image URLs from Steam Store API
+    try {
+        await fetchHeaderImages(games);
+    } catch (e) {
+        console.error('[Steam] Failed to fetch header images:', e);
+    }
+
+    return games;
+}
+
+// Cache for header image URLs to avoid redundant API calls
+const headerImageCache = new Map<string, string>();
+
+/** Fetch header image URLs from Steam Store API */
+async function fetchHeaderImages(games: Game[]): Promise<void> {
+    // Only fetch for games we haven't cached yet
+    const uncachedGames = games.filter(g => !headerImageCache.has(g.id));
+    if (uncachedGames.length === 0) {
+        // Apply cached URLs
+        games.forEach(g => {
+            if (headerImageCache.has(g.id)) {
+                g.headerImageUrl = headerImageCache.get(g.id);
+            }
+        });
+        return;
+    }
+
+    // Batch API calls (Steam API supports multiple appids comma-separated)
+    const batchSize = 5;
+    for (let i = 0; i < uncachedGames.length; i += batchSize) {
+        const batch = uncachedGames.slice(i, i + batchSize);
+
+        await Promise.all(batch.map(async (game) => {
+            try {
+                const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.id}&filters=basic`);
+                if (!res.ok) return;
+
+                const data = await res.json();
+                const appData = data[game.id];
+
+                if (appData?.success && appData.data?.header_image) {
+                    const url = appData.data.header_image;
+                    headerImageCache.set(game.id, url);
+                    game.headerImageUrl = url;
+                    console.log(`[Steam] Got header image for ${game.title}: ${url.substring(0, 80)}...`);
+                }
+            } catch {
+                // Silently skip failed API calls
+            }
+        }));
+
+        // Small delay between batches to avoid rate limiting
+        if (i + batchSize < uncachedGames.length) {
+            await new Promise(r => setTimeout(r, 500));
+        }
+    }
+
+    // Apply all cached URLs
+    games.forEach(g => {
+        if (headerImageCache.has(g.id)) {
+            g.headerImageUrl = headerImageCache.get(g.id);
+        }
+    });
 }

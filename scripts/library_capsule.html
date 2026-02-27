@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Library Capsule - GameVision Tuner</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 600px;
+      height: 900px;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
+    }
+
+    .capsule {
+      width: 600px;
+      height: 900px;
+      background: linear-gradient(180deg, #050d1a 0%, #0A192F 30%, #0d1f3c 70%, #071428 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Hexagonal grid pattern */
+    .hex-pattern {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 300px;
+      background-image:
+        radial-gradient(circle at 25% 50%, rgba(0, 243, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 75% 50%, rgba(0, 243, 255, 0.03) 0%, transparent 50%);
+      opacity: 0.8;
+    }
+
+    .hex-pattern::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(60deg, transparent 45%, rgba(0, 180, 220, 0.06) 45%, rgba(0, 180, 220, 0.06) 55%, transparent 55%) 0 0 / 40px 70px,
+        linear-gradient(-60deg, transparent 45%, rgba(0, 180, 220, 0.06) 45%, rgba(0, 180, 220, 0.06) 55%, transparent 55%) 0 0 / 40px 70px,
+        linear-gradient(0deg, transparent 45%, rgba(0, 180, 220, 0.04) 45%, rgba(0, 180, 220, 0.04) 55%, transparent 55%) 0 0 / 40px 70px;
+      mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+    }
+
+    /* Title */
+    .title {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .title .line1 {
+      font-size: 54px;
+      font-weight: 900;
+      letter-spacing: 6px;
+      color: #fff;
+      text-shadow:
+        0 0 20px rgba(0, 243, 255, 0.6),
+        0 0 40px rgba(0, 243, 255, 0.3),
+        0 0 80px rgba(0, 243, 255, 0.15);
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .title .line2 {
+      font-size: 68px;
+      font-weight: 900;
+      letter-spacing: 10px;
+      color: #fff;
+      text-shadow:
+        0 0 20px rgba(0, 243, 255, 0.6),
+        0 0 40px rgba(0, 243, 255, 0.3),
+        0 0 80px rgba(0, 243, 255, 0.15);
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    /* ===== Split Screen Section (Before / After) ===== */
+    .split-screen {
+      position: relative;
+      z-index: 5;
+      width: 420px;
+      height: 240px;
+      display: flex;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 3px solid rgba(0, 243, 255, 0.4);
+      box-shadow:
+        0 0 25px rgba(0, 243, 255, 0.2),
+        0 0 60px rgba(0, 243, 255, 0.08);
+      margin-bottom: 20px;
+    }
+
+    /* Left half - Dull / Desaturated */
+    .split-left {
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      filter: grayscale(0.6) brightness(0.6);
+    }
+
+    /* Fake game scene elements (dull) */
+    .scene-element {
+      border-radius: 6px;
+    }
+
+    .split-left .scene-sky {
+      width: 180px;
+      height: 50px;
+      background: linear-gradient(to bottom, #2a2a3e, #3a3a50);
+      border-radius: 6px;
+    }
+
+    .split-left .scene-ground {
+      width: 180px;
+      height: 30px;
+      background: linear-gradient(to bottom, #333346, #2a2a3e);
+      border-radius: 6px;
+    }
+
+    .split-left .scene-tree {
+      position: absolute;
+      bottom: 65px;
+      left: 25px;
+      width: 30px;
+      height: 50px;
+      background: #2d3a28;
+      border-radius: 50% 50% 4px 4px;
+    }
+
+    .split-left .scene-tree::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 14px;
+      background: #3a3024;
+      border-radius: 2px;
+    }
+
+    .split-left .scene-player {
+      position: absolute;
+      bottom: 60px;
+      right: 35px;
+      width: 20px;
+      height: 35px;
+      background: #444455;
+      border-radius: 6px 6px 3px 3px;
+    }
+
+    .split-left .scene-enemy {
+      position: absolute;
+      bottom: 70px;
+      left: 60px;
+      width: 16px;
+      height: 28px;
+      background: #3a3a3a;
+      border-radius: 5px 5px 3px 3px;
+      opacity: 0.5;
+    }
+
+    /* Right half - Vibrant / Enhanced */
+    .split-right {
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(135deg, #0d2847 0%, #0a3060 50%, #0d2847 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .split-right .scene-sky {
+      width: 180px;
+      height: 50px;
+      background: linear-gradient(to bottom, #1a5276, #2e86c1);
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(46, 134, 193, 0.3);
+    }
+
+    .split-right .scene-ground {
+      width: 180px;
+      height: 30px;
+      background: linear-gradient(to bottom, #1e8449, #27ae60);
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(39, 174, 96, 0.3);
+    }
+
+    .split-right .scene-tree {
+      position: absolute;
+      bottom: 65px;
+      left: 25px;
+      width: 30px;
+      height: 50px;
+      background: #27ae60;
+      border-radius: 50% 50% 4px 4px;
+      box-shadow: 0 0 10px rgba(39, 174, 96, 0.4);
+    }
+
+    .split-right .scene-tree::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 14px;
+      background: #8B4513;
+      border-radius: 2px;
+    }
+
+    .split-right .scene-player {
+      position: absolute;
+      bottom: 60px;
+      right: 35px;
+      width: 20px;
+      height: 35px;
+      background: #3498db;
+      border-radius: 6px 6px 3px 3px;
+      box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+    }
+
+    .split-right .scene-enemy {
+      position: absolute;
+      bottom: 70px;
+      left: 60px;
+      width: 16px;
+      height: 28px;
+      background: #e74c3c;
+      border-radius: 5px 5px 3px 3px;
+      box-shadow: 0 0 12px rgba(231, 76, 60, 0.5);
+    }
+
+    /* Center divider line */
+    .split-divider {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(0, 243, 255, 0.8), rgba(0, 243, 255, 0.3), rgba(0, 243, 255, 0.8));
+      z-index: 10;
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    }
+
+    /* Arrow icon on divider */
+    .split-divider::after {
+      content: '◀ ▶';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #0A192F;
+      border: 2px solid rgba(0, 243, 255, 0.6);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: #00F3FF;
+      letter-spacing: 2px;
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+    }
+
+    /* Labels on split screen */
+    .label-before {
+      position: absolute;
+      bottom: 8px;
+      left: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      z-index: 11;
+    }
+
+    .label-after {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #00F3FF;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      z-index: 11;
+      text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+    }
+
+    /* ===== Adjustment Controls ===== */
+    .controls-section {
+      position: relative;
+      z-index: 5;
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 30px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .control-label {
+      width: 100px;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .control-track {
+      flex: 1;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 5px;
+      position: relative;
+      overflow: visible;
+    }
+
+    .control-fill {
+      height: 100%;
+      border-radius: 5px;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .control-fill.brightness {
+      width: 70%;
+      background: linear-gradient(90deg, #f39c12, #f1c40f);
+      box-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+    }
+
+    .control-fill.contrast {
+      width: 60%;
+      background: linear-gradient(90deg, #00F3FF, #00bbdd);
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+    }
+
+    .control-fill.gamma {
+      width: 45%;
+      background: linear-gradient(90deg, #9b59b6, #8e44ad);
+      box-shadow: 0 0 10px rgba(142, 68, 173, 0.4);
+    }
+
+    .control-fill.vibrance {
+      width: 85%;
+      background: linear-gradient(90deg, #e74c3c, #ff6b9d, #FF6BFF);
+      box-shadow: 0 0 12px rgba(255, 107, 255, 0.5);
+    }
+
+    .control-knob {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .control-knob.at70 {
+      left: 70%;
+    }
+
+    .control-knob.at60 {
+      left: 60%;
+    }
+
+    .control-knob.at45 {
+      left: 45%;
+    }
+
+    .control-knob.at85 {
+      left: 85%;
+    }
+
+    .control-value {
+      width: 42px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    /* Vibrance row highlight */
+    .control-row.highlight .control-label {
+      color: #FF6BFF;
+      text-shadow: 0 0 8px rgba(255, 107, 255, 0.4);
+    }
+
+    .control-row.highlight .control-value {
+      color: #FF6BFF;
+      text-shadow: 0 0 8px rgba(255, 107, 255, 0.4);
+    }
+
+    /* ===== Particle dots ===== */
+    .particles {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #00F3FF;
+      border-radius: 50%;
+      box-shadow: 0 0 6px 2px rgba(0, 243, 255, 0.5);
+    }
+
+    .particle:nth-child(1) {
+      top: 8%;
+      left: 12%;
+      width: 2px;
+      height: 2px;
+      opacity: 0.5;
+    }
+
+    .particle:nth-child(2) {
+      top: 15%;
+      right: 8%;
+      width: 3px;
+      height: 3px;
+      opacity: 0.7;
+    }
+
+    .particle:nth-child(3) {
+      top: 35%;
+      left: 5%;
+      width: 2px;
+      height: 2px;
+      opacity: 0.4;
+    }
+
+    .particle:nth-child(4) {
+      top: 55%;
+      right: 6%;
+      width: 3px;
+      height: 3px;
+      opacity: 0.6;
+    }
+
+    .particle:nth-child(5) {
+      top: 72%;
+      left: 10%;
+      width: 2px;
+      height: 2px;
+      opacity: 0.5;
+    }
+
+    .particle:nth-child(6) {
+      top: 88%;
+      right: 15%;
+      width: 3px;
+      height: 3px;
+      opacity: 0.6;
+    }
+
+    .particle:nth-child(7) {
+      top: 45%;
+      left: 90%;
+      width: 2px;
+      height: 2px;
+      opacity: 0.4;
+    }
+
+    .particle:nth-child(8) {
+      top: 20%;
+      left: 85%;
+      width: 2px;
+      height: 2px;
+      opacity: 0.3;
+    }
+
+    /* Tagline */
+    .tagline {
+      position: relative;
+      z-index: 5;
+      margin-top: 40px;
+      text-align: center;
+      color: rgba(0, 243, 255, 0.6);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    /* Auto badge */
+    .auto-badge {
+      position: relative;
+      z-index: 5;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .auto-badge-icon {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #58CC02;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #58CC02;
+      box-shadow: 0 0 8px rgba(88, 204, 2, 0.3);
+    }
+
+    .auto-badge-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(88, 204, 2, 0.8);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="capsule">
+    <div class="hex-pattern"></div>
+    <div class="particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+
+    <div class="title">
+      <div class="line1">GAMEVISION</div>
+      <div class="line2">TUNER</div>
+    </div>
+
+    <!-- Before / After Split Screen -->
+    <div class="split-screen">
+      <div class="split-left">
+        <div class="scene-sky"></div>
+        <div class="scene-ground"></div>
+        <div class="scene-tree"></div>
+        <div class="scene-player"></div>
+        <div class="scene-enemy"></div>
+      </div>
+      <div class="split-right">
+        <div class="scene-sky"></div>
+        <div class="scene-ground"></div>
+        <div class="scene-tree"></div>
+        <div class="scene-player"></div>
+        <div class="scene-enemy"></div>
+      </div>
+      <div class="split-divider"></div>
+      <span class="label-before">BEFORE</span>
+      <span class="label-after">AFTER</span>
+    </div>
+
+    <!-- Adjustment Sliders -->
+    <div class="controls-section">
+      <div class="control-row">
+        <span class="control-label">Brightness</span>
+        <div class="control-track">
+          <div class="control-fill brightness"></div>
+          <div class="control-knob at70"></div>
+        </div>
+        <span class="control-value">70</span>
+      </div>
+      <div class="control-row">
+        <span class="control-label">Contrast</span>
+        <div class="control-track">
+          <div class="control-fill contrast"></div>
+          <div class="control-knob at60"></div>
+        </div>
+        <span class="control-value">60</span>
+      </div>
+      <div class="control-row">
+        <span class="control-label">Gamma</span>
+        <div class="control-track">
+          <div class="control-fill gamma"></div>
+          <div class="control-knob at45"></div>
+        </div>
+        <span class="control-value">45</span>
+      </div>
+      <div class="control-row highlight">
+        <span class="control-label">Vibrance</span>
+        <div class="control-track">
+          <div class="control-fill vibrance"></div>
+          <div class="control-knob at85"></div>
+        </div>
+        <span class="control-value">85</span>
+      </div>
+    </div>
+
+    <div class="tagline">Your Display • Your Rules</div>
+
+    <div class="auto-badge">
+      <div class="auto-badge-icon">✓</div>
+      <span class="auto-badge-text">Auto Apply & Restore</span>
+    </div>
+
+  </div>
+</body>
+
+</html>

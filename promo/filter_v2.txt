@@ -1,0 +1,63 @@
+color=c=0x0A192F:s=1920x1080:d=3:r=30[title];
+[0:v]scale=1920:1080,setsar=1,format=yuv420p[img1];
+[1:v]scale=1920:1080,setsar=1,format=yuv420p[img2];
+[2:v]scale=1920:1080,setsar=1,format=yuv420p[img3];
+[3:v]scale=1920:1080,setsar=1,format=yuv420p[img4];
+[4:v]scale=1920:1080,setsar=1,format=yuv420p[img5];
+color=c=0x050E1A:s=1920x1080:d=3:r=30[ending];
+
+[title]
+drawbox=x=660:y=480:w=600:h=4:color=0x00F3FF@0.8:t=fill:enable='between(t,0.3,2.7)',
+drawbox=x=0:y=0:w=1920:h=3:color=0x00F3FF@0.5:t=fill,
+drawbox=x=0:y=1077:w=1920:h=3:color=0x00F3FF@0.5:t=fill,
+drawtext=text='GameVision Tuner':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=84:fontcolor=0x00F3FF:x=(w-text_w)/2:y=300:alpha='if(lt(t,0.3),0,if(lt(t,1),(t-0.3)/0.7,1))',
+drawtext=text='NVIDIA Display Optimizer':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=36:fontcolor=0xFFFFFF@0.9:x=(w-text_w)/2:y=520:alpha='if(lt(t,0.6),0,if(lt(t,1.3),(t-0.6)/0.7,1))',
+drawtext=text='Per-Game Brightness | Contrast | Gamma | Vibrance':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=24:fontcolor=0x8892B0@0.7:x=(w-text_w)/2:y=580:alpha='if(lt(t,0.9),0,if(lt(t,1.6),(t-0.9)/0.7,1))',
+fade=t=out:st=2.5:d=0.5
+[title_out];
+
+[img1]
+drawbox=x=0:y=950:w=1920:h=130:color=0x0A192F@0.85:t=fill,
+drawtext=text='Your Steam Library - One Click Away':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=36:fontcolor=0x00F3FF:x=(w-text_w)/2:y=985:alpha='if(lt(t,0.5),0,if(lt(t,1.5),(t-0.5),1))',
+fade=t=in:st=0:d=0.5,
+fade=t=out:st=4.5:d=0.5
+[img1_out];
+
+[img2]
+drawbox=x=0:y=950:w=1920:h=130:color=0x0A192F@0.85:t=fill,
+drawtext=text='Customize Display Settings for Each Game':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=36:fontcolor=0x00F3FF:x=(w-text_w)/2:y=985:alpha='if(lt(t,0.5),0,if(lt(t,1.5),(t-0.5),1))',
+fade=t=in:st=0:d=0.5,
+fade=t=out:st=3.5:d=0.5
+[img2_out];
+
+[img3]
+drawbox=x=0:y=950:w=1920:h=130:color=0x0A192F@0.85:t=fill,
+drawtext=text='Fine-tune with Real-time Preview':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=36:fontcolor=0x00F3FF:x=(w-text_w)/2:y=985:alpha='if(lt(t,0.5),0,if(lt(t,1.5),(t-0.5),1))',
+fade=t=in:st=0:d=0.5,
+fade=t=out:st=3.5:d=0.5
+[img3_out];
+
+[img4]
+drawbox=x=0:y=950:w=1920:h=130:color=0x0A192F@0.85:t=fill,
+drawtext=text='Add Games from Your Steam Library':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=36:fontcolor=0x00F3FF:x=(w-text_w)/2:y=985:alpha='if(lt(t,0.5),0,if(lt(t,1.5),(t-0.5),1))',
+fade=t=in:st=0:d=0.5,
+fade=t=out:st=3.5:d=0.5
+[img4_out];
+
+[img5]
+drawbox=x=0:y=950:w=1920:h=130:color=0x0A192F@0.85:t=fill,
+drawtext=text='Before vs After - See the Difference':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=36:fontcolor=0x00F3FF:x=(w-text_w)/2:y=985:alpha='if(lt(t,0.5),0,if(lt(t,1.5),(t-0.5),1))',
+fade=t=in:st=0:d=0.5,
+fade=t=out:st=4.5:d=0.5
+[img5_out];
+
+[ending]
+drawbox=x=660:y=440:w=600:h=4:color=0x00F3FF@0.8:t=fill:enable='between(t,0.5,3)',
+drawbox=x=660:y=600:w=600:h=4:color=0x00F3FF@0.8:t=fill:enable='between(t,0.5,3)',
+drawtext=text='GameVision Tuner':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=72:fontcolor=0x00F3FF:x=(w-text_w)/2:y=462:alpha='if(lt(t,0.5),0,if(lt(t,1.5),(t-0.5),1))',
+drawtext=text='FREE on Steam':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=36:fontcolor=0x44CC00:x=(w-text_w)/2:y=640:alpha='if(lt(t,1),0,if(lt(t,2),(t-1),1))',
+drawtext=text='Enhance Your Gaming Experience':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=28:fontcolor=0x8892B0@0.8:x=(w-text_w)/2:y=720:alpha='if(lt(t,1.5),0,if(lt(t,2.5),(t-1.5),1))',
+fade=t=in:st=0:d=0.5
+[ending_out];
+
+[title_out][img1_out][img2_out][img3_out][img4_out][img5_out][ending_out]concat=n=7:v=1:a=0[outv]

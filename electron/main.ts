@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { execFile } from 'node:child_process'
 import Store from 'electron-store'
 import { scanSteamGames } from './steam'
 
@@ -28,6 +29,9 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
 
 let win: BrowserWindow | null
+
+// Track known game IDs for detecting new installs
+let knownGameIds = new Set<string>();
 
 function createWindow() {
   win = new BrowserWindow({
@@ -72,13 +76,11 @@ ipcMain.handle('load-profile', async (_event, gameId) => {
   return store.get(`profiles.${gameId}`, null);
 })
 
-ipcMain.handle('apply-settings', async (_event, profile) => {
-  console.log('Applying settings:', profile);
+// DisplayTuner process queue: prevents concurrent calls that cause missed updates
+let tunerRunning = false;
+let pendingProfile: any = null;
 
-  // Resolve path to DisplayTuner.exe
-  // In dev: ./backend/DisplayTuner.exe
-  // In prod: resources/backend/DisplayTuner.exe (need to configure builder)
-
+async function runDisplayTuner(profile: any): Promise<void> {
   let tunerPath;
   if (app.isPackaged) {
     tunerPath = path.join(process.resourcesPath, 'backend', 'DisplayTuner.exe');
@@ -87,16 +89,6 @@ ipcMain.handle('apply-settings', async (_event, profile) => {
   }
 
   const { brightness, contrast, gamma, digitalVibrance } = profile;
-
-  // Spawn
-  const { execFile } = await import('child_process');
-
-  // Map arguments
-  // Vibrance is 0-100 in UI. DisplayTuner takes 0-100? Yes.
-  // Brightness 0-100.
-  // Gamma 0.5-2.5.
-  // Contrast 0-100.
-
   const args = [
     '--brightness', brightness.toString(),
     '--contrast', contrast.toString(),
@@ -106,16 +98,48 @@ ipcMain.handle('apply-settings', async (_event, profile) => {
 
   console.log(`Running: ${tunerPath} ${args.join(' ')}`);
 
-  execFile(tunerPath, args, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`DisplayTuner error: ${error.message}`);
-      console.error(stderr);
-      return;
-    }
-    console.log(`DisplayTuner output: ${stdout}`);
+  return new Promise<void>((resolve) => {
+    execFile(tunerPath, args, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`DisplayTuner error: ${error.message}`);
+        console.error(stderr);
+      } else {
+        console.log(`DisplayTuner output: ${stdout}`);
+      }
+      resolve();
+    });
   });
+}
+
+async function applySettingsQueued(profile: any): Promise<boolean> {
+  // If already running, queue the latest profile and return
+  if (tunerRunning) {
+    pendingProfile = profile;
+    console.log('[Tuner] Queued profile update (previous still running)');
+    return true;
+  }
+
+  tunerRunning = true;
+  try {
+    await runDisplayTuner(profile);
+  } finally {
+    tunerRunning = false;
+  }
+
+  // If a new profile was queued while running, apply the latest one
+  if (pendingProfile) {
+    const latest = pendingProfile;
+    pendingProfile = null;
+    console.log('[Tuner] Applying queued profile update');
+    return applySettingsQueued(latest);
+  }
 
   return true;
+}
+
+ipcMain.handle('apply-settings', async (_event, profile) => {
+  console.log('Applying settings:', profile);
+  return applySettingsQueued(profile);
 })
 
 ipcMain.handle('launch-game', async (_event, gameId) => {
@@ -151,7 +175,6 @@ function startGlobalGameMonitor() {
 
   // Use execFile 'reg' directly to avoid spawning cmd.exe shell instance every second.
   // This reduces process noise in Task Manager.
-  const { execFile } = require('child_process');
 
   // Polling Interval: 2s (Less aggressive)
   setInterval(() => {
@@ -219,10 +242,7 @@ async function applySettingsBackend(profile: any) {
 
   console.log(`[Backend] Applying: ${args.join(' ')}`);
 
-  // We need execFile from child_process
-  // Since we are inside a function, we can import or use global if available.
-  // 'exec' is already imported. 'execFile' needs import.
-  const { execFile } = await import('child_process');
+  // execFile is imported at the top level
 
   execFile(tunerPath, args, (error, stdout, _stderr) => {
     if (error) {
@@ -250,7 +270,7 @@ async function snapshotCurrentSettings() {
     tunerPath = path.join(__dirname, '..', 'backend', 'DisplayTuner.exe');
   }
 
-  const { execFile } = await import('child_process');
+
 
   return new Promise<void>((resolve) => {
     execFile(tunerPath, ['--read'], (error, stdout, _stderr) => {
@@ -298,7 +318,6 @@ async function restoreDefaultsBackend() {
     '--vibrance', digitalVibrance.toString()
   ];
 
-  const { execFile } = await import('child_process');
   execFile(tunerPath, args, (error, stdout, _stderr) => {
     if (error) console.error("Failed to restore defaults:", error);
     else console.log("Defaults restored automatically:", stdout);
@@ -387,8 +406,45 @@ app.on('activate', () => {
 // app.commandLine.appendSwitch('high-dpi-support', '1');
 // app.commandLine.appendSwitch('force-device-scale-factor', '1'); <--- This caused the extreme blur!
 
+// Periodic Steam Library Scanner (detects newly installed games)
+function startLibraryScanner() {
+  console.log('[Scanner] Starting periodic Steam library scanner (every 60s)...');
+
+  // Initial scan to populate known game IDs
+  scanSteamGames().then(games => {
+    knownGameIds = new Set(games.map(g => g.id));
+    console.log(`[Scanner] Initial scan: ${knownGameIds.size} games found.`);
+  });
+
+  // Periodic scan every 60 seconds
+  setInterval(async () => {
+    try {
+      const games = await scanSteamGames();
+      const currentIds = new Set(games.map(g => g.id));
+
+      // Detect new games
+      const newGames = games.filter(g => !knownGameIds.has(g.id));
+
+      if (newGames.length > 0) {
+        console.log(`[Scanner] ${newGames.length} new game(s) detected:`, newGames.map(g => g.title).join(', '));
+
+        // Update known IDs
+        knownGameIds = currentIds;
+
+        // Notify renderer
+        if (win && !win.isDestroyed()) {
+          win.webContents.send('steam-library-updated', games);
+        }
+      }
+    } catch (e) {
+      console.error('[Scanner] Periodic scan error:', e);
+    }
+  }, 60000); // 60 seconds
+}
+
 app.whenReady().then(async () => {
   await snapshotCurrentSettings();
   createWindow();
   startGlobalGameMonitor();
+  startLibraryScanner();
 })

@@ -32,4 +32,10 @@ contextBridge.exposeInMainWorld('gameVisionAPI', {
   closeWindow: () => ipcRenderer.invoke('close-window'),
   getActiveGames: () => ipcRenderer.invoke('get-active-games'),
   updateActiveGames: (gameIds: string[]) => ipcRenderer.invoke('update-active-games', gameIds),
+  onSteamLibraryUpdated: (callback: (games: any[]) => void) => {
+    const handler = (_event: any, games: any[]) => callback(games);
+    ipcRenderer.on('steam-library-updated', handler);
+    // Return cleanup function
+    return () => ipcRenderer.removeListener('steam-library-updated', handler);
+  },
 })

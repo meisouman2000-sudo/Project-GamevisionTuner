@@ -1,0 +1,90 @@
+$ffmpeg = "C:\ffmpeg-2026-02-18-git-52b676bb29-essentials_build\bin\ffmpeg.exe"
+$outputDir = "C:\Users\negis\Downloads\NVIDIAビデオ設定アプリ\promo"
+$outputFile = "$outputDir\GameVisionTuner_Promo.mp4"
+$filterFile = "$outputDir\filter.txt"
+
+if (-not (Test-Path $outputDir)) {
+    New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+}
+
+$filter = @'
+color=c=0x0A192F:s=1920x1080:d=24:r=30,
+drawbox=x=0:y=0:w=1920:h=1080:color=0x050E1A@1:t=fill:enable='between(t,5,9)',
+drawbox=x=0:y=0:w=1920:h=1080:color=0x050E1A@1:t=fill:enable='between(t,21,24)',
+drawbox=x=660:y=480:w=600:h=4:color=0x00F3FF@0.8:t=fill:enable='between(t,0.5,4.5)',
+drawtext=text='GameVision Tuner':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=80:fontcolor=0x00F3FF:x=(w-text_w)/2:y=320:alpha='if(lt(t,0.5),0,if(lt(t,1.5),(t-0.5),if(lt(t,4),1,max(0,1-(t-4)))))':enable='between(t,0,5)',
+drawtext=text='NVIDIA Display Auto-Optimization':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=36:fontcolor=0xFFFFFF@0.9:x=(w-text_w)/2:y=520:alpha='if(lt(t,1),0,if(lt(t,2),(t-1),if(lt(t,4),1,max(0,1-(t-4)))))':enable='between(t,0,5)',
+drawtext=text='Per-Game Brightness, Contrast, Gamma, Vibrance':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=26:fontcolor=0x8892B0@0.7:x=(w-text_w)/2:y=580:alpha='if(lt(t,1.5),0,if(lt(t,2.5),(t-1.5),if(lt(t,4),1,max(0,1-(t-4)))))':enable='between(t,0,5)',
+drawbox=x=0:y=0:w=1920:h=3:color=0x00F3FF@0.5:t=fill:enable='between(t,0,5)',
+drawbox=x=0:y=1077:w=1920:h=3:color=0x00F3FF@0.5:t=fill:enable='between(t,0,5)',
+drawtext=text='Common Problems':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=52:fontcolor=0x00F3FF:x=(w-text_w)/2:y=200:alpha='if(lt(t,5.5),0,if(lt(t,6.5),(t-5.5),if(lt(t,8.5),1,max(0,1-(t-8.5)))))':enable='between(t,5,9)',
+drawbox=x=100:y=360:w=1720:h=300:color=0x112240@0.5:t=fill:enable='between(t,6,8.5)',
+drawtext=text='Game is too dark to see anything':fontfile='C\:/Windows/Fonts/consola.ttf':fontsize=30:fontcolor=0xFFFFFF@0.9:x=250:y=400:alpha='if(lt(t,6),0,if(lt(t,7),(t-6),if(lt(t,8.5),1,0)))':enable='between(t,5.5,9)',
+drawtext=text='Changing settings every time is tedious':fontfile='C\:/Windows/Fonts/consola.ttf':fontsize=30:fontcolor=0xFFFFFF@0.9:x=250:y=470:alpha='if(lt(t,6.5),0,if(lt(t,7.5),(t-6.5),if(lt(t,8.5),1,0)))':enable='between(t,6,9)',
+drawtext=text='Forgot to reset settings after gaming':fontfile='C\:/Windows/Fonts/consola.ttf':fontsize=30:fontcolor=0xFFFFFF@0.9:x=250:y=540:alpha='if(lt(t,7),0,if(lt(t,8),(t-7),if(lt(t,8.5),1,0)))':enable='between(t,6.5,9)',
+drawtext=text='Brightness / Contrast / Gamma / Vibrance':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=46:fontcolor=0x00F3FF:x=(w-text_w)/2:y=160:alpha='if(lt(t,9.5),0,if(lt(t,10.5),(t-9.5),if(lt(t,12.5),1,max(0,1-(t-12.5)))))':enable='between(t,9,13)',
+drawtext=text='Intuitive Slider Controls':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=34:fontcolor=0xFFFFFF:x=(w-text_w)/2:y=240:alpha='if(lt(t,10),0,if(lt(t,11),(t-10),if(lt(t,12.5),1,max(0,1-(t-12.5)))))':enable='between(t,9,13)',
+drawbox=x=460:y=340:w=1000:h=380:color=0x112240@0.7:t=fill:enable='between(t,10,12.5)',
+drawbox=x=460:y=340:w=1000:h=380:color=0x00F3FF@0.3:t=2:enable='between(t,10,12.5)',
+drawtext=text='Brightness':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=24:fontcolor=0x00F3FF@0.9:x=500:y=370:enable='between(t,10,12.5)',
+drawbox=x=700:y=375:w=700:h=18:color=0x1a365d@0.8:t=fill:enable='between(t,10,12.5)',
+drawbox=x=700:y=375:w='min(550,max(0,(t-10)*280))':h=18:color=0x44CC00@0.9:t=fill:enable='between(t,10,12.5)',
+drawtext=text='Contrast':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=24:fontcolor=0x00F3FF@0.9:x=500:y=440:enable='between(t,10.2,12.5)',
+drawbox=x=700:y=445:w=700:h=18:color=0x1a365d@0.8:t=fill:enable='between(t,10.2,12.5)',
+drawbox=x=700:y=445:w='min(480,max(0,(t-10.2)*240))':h=18:color=0x44CC00@0.9:t=fill:enable='between(t,10.2,12.5)',
+drawtext=text='Gamma':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=24:fontcolor=0x00F3FF@0.9:x=500:y=510:enable='between(t,10.4,12.5)',
+drawbox=x=700:y=515:w=700:h=18:color=0x1a365d@0.8:t=fill:enable='between(t,10.4,12.5)',
+drawbox=x=700:y=515:w='min(380,max(0,(t-10.4)*190))':h=18:color=0x44CC00@0.9:t=fill:enable='between(t,10.4,12.5)',
+drawtext=text='Vibrance':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=24:fontcolor=0x00F3FF@0.9:x=500:y=580:enable='between(t,10.6,12.5)',
+drawbox=x=700:y=585:w=700:h=18:color=0x1a365d@0.8:t=fill:enable='between(t,10.6,12.5)',
+drawbox=x=700:y=585:w='min(620,max(0,(t-10.6)*310))':h=18:color=0x44CC00@0.9:t=fill:enable='between(t,10.6,12.5)',
+drawtext=text='75':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=20:fontcolor=0xFFFFFF@0.7:x=1420:y=372:enable='between(t,11,12.5)',
+drawtext=text='65':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=20:fontcolor=0xFFFFFF@0.7:x=1420:y=442:enable='between(t,11.2,12.5)',
+drawtext=text='1.2':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=20:fontcolor=0xFFFFFF@0.7:x=1420:y=512:enable='between(t,11.4,12.5)',
+drawtext=text='85':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=20:fontcolor=0xFFFFFF@0.7:x=1420:y=582:enable='between(t,11.6,12.5)',
+drawtext=text='Auto Detect Game Launch':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=46:fontcolor=0x00F3FF:x=(w-text_w)/2:y=160:alpha='if(lt(t,13.5),0,if(lt(t,14.5),(t-13.5),if(lt(t,16.5),1,max(0,1-(t-16.5)))))':enable='between(t,13,17)',
+drawtext=text='Auto Apply and Restore Profiles':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=34:fontcolor=0xFFFFFF:x=(w-text_w)/2:y=260:alpha='if(lt(t,14),0,if(lt(t,15),(t-14),if(lt(t,16.5),1,max(0,1-(t-16.5)))))':enable='between(t,13,17)',
+drawbox=x=200:y=380:w=650:h=320:color=0x112240@0.8:t=fill:enable='between(t,14,16.5)',
+drawbox=x=200:y=380:w=650:h=50:color=0x44CC00@0.6:t=fill:enable='between(t,14,16.5)',
+drawtext=text='ON GAME START':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=22:fontcolor=0xFFFFFF:x=380:y=392:enable='between(t,14,16.5)',
+drawtext=text='Apply custom profile':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=24:fontcolor=0xFFFFFF@0.9:x=270:y=460:enable='between(t,14.3,16.5)',
+drawtext=text='Brightness UP':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=24:fontcolor=0x44CC00@0.9:x=270:y=510:enable='between(t,14.5,16.5)',
+drawtext=text='Contrast UP':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=24:fontcolor=0x44CC00@0.9:x=270:y=560:enable='between(t,14.7,16.5)',
+drawtext=text='Vibrance UP':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=24:fontcolor=0x44CC00@0.9:x=270:y=610:enable='between(t,14.9,16.5)',
+drawbox=x=900:y=500:w=120:h=60:color=0x0A192F@0.8:t=fill:enable='between(t,14.5,16.5)',
+drawtext=text='>>>':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=40:fontcolor=0x00F3FF:x=915:y=508:enable='between(t,14.5,16.5)',
+drawbox=x=1070:y=380:w=650:h=320:color=0x112240@0.8:t=fill:enable='between(t,14,16.5)',
+drawbox=x=1070:y=380:w=650:h=50:color=0x00F3FF@0.6:t=fill:enable='between(t,14,16.5)',
+drawtext=text='ON GAME EXIT':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=22:fontcolor=0xFFFFFF:x=1260:y=392:enable='between(t,14,16.5)',
+drawtext=text='Restore original settings':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=24:fontcolor=0xFFFFFF@0.9:x=1140:y=460:enable='between(t,15,16.5)',
+drawtext=text='Desktop stays normal':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=24:fontcolor=0xFFFFFF@0.9:x=1140:y=510:enable='between(t,15.2,16.5)',
+drawtext=text='No forgotten settings':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=24:fontcolor=0xFFFFFF@0.9:x=1140:y=560:enable='between(t,15.4,16.5)',
+drawtext=text='Fully automatic':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=24:fontcolor=0x00F3FF@0.9:x=1140:y=610:enable='between(t,15.6,16.5)',
+drawtext=text='Steam Library Integration':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=46:fontcolor=0x00F3FF:x=(w-text_w)/2:y=160:alpha='if(lt(t,17.5),0,if(lt(t,18.5),(t-17.5),if(lt(t,20.5),1,max(0,1-(t-20.5)))))':enable='between(t,17,21)',
+drawtext=text='Auto-detect all installed games':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=34:fontcolor=0xFFFFFF:x=(w-text_w)/2:y=260:alpha='if(lt(t,18),0,if(lt(t,19),(t-18),if(lt(t,20.5),1,max(0,1-(t-20.5)))))':enable='between(t,17,21)',
+drawbox=x=160:y=380:w=500:h=340:color=0x112240@0.8:t=fill:enable='between(t,18,20.5)',
+drawbox=x=160:y=380:w=500:h=200:color=0x1a365d@0.5:t=fill:enable='between(t,18,20.5)',
+drawtext=text='Apex Legends':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=22:fontcolor=0xFFFFFF:x=310:y=600:enable='between(t,18,20.5)',
+drawbox=x=260:y=640:w=200:h=40:color=0x44CC00@0.9:t=fill:enable='between(t,18,20.5)',
+drawtext=text='GO!':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=18:fontcolor=0x0A192F:x=340:y=650:enable='between(t,18,20.5)',
+drawbox=x=710:y=380:w=500:h=340:color=0x112240@0.8:t=fill:enable='between(t,18.3,20.5)',
+drawbox=x=710:y=380:w=500:h=200:color=0x1a365d@0.5:t=fill:enable='between(t,18.3,20.5)',
+drawtext=text='PUBG':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=22:fontcolor=0xFFFFFF:x=910:y=600:enable='between(t,18.3,20.5)',
+drawbox=x=810:y=640:w=200:h=40:color=0x44CC00@0.9:t=fill:enable='between(t,18.3,20.5)',
+drawtext=text='GO!':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=18:fontcolor=0x0A192F:x=890:y=650:enable='between(t,18.3,20.5)',
+drawbox=x=1260:y=380:w=500:h=340:color=0x112240@0.8:t=fill:enable='between(t,18.6,20.5)',
+drawbox=x=1260:y=380:w=500:h=200:color=0x1a365d@0.5:t=fill:enable='between(t,18.6,20.5)',
+drawtext=text='Core Keeper':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=22:fontcolor=0xFFFFFF:x=1410:y=600:enable='between(t,18.6,20.5)',
+drawbox=x=1360:y=640:w=200:h=40:color=0x44CC00@0.9:t=fill:enable='between(t,18.6,20.5)',
+drawtext=text='GO!':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=18:fontcolor=0x0A192F:x=1440:y=650:enable='between(t,18.6,20.5)',
+drawbox=x=660:y=440:w=600:h=4:color=0x00F3FF@0.8:t=fill:enable='between(t,21.5,24)',
+drawbox=x=660:y=580:w=600:h=4:color=0x00F3FF@0.8:t=fill:enable='between(t,21.5,24)',
+drawtext=text='GameVision Tuner':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=72:fontcolor=0x00F3FF:x=(w-text_w)/2:y=462:alpha='if(lt(t,21.5),0,if(lt(t,22.5),(t-21.5),1))':enable='between(t,21,24)',
+drawtext=text='FREE on Steam':fontfile='C\:/Windows/Fonts/segoeuib.ttf':fontsize=36:fontcolor=0x44CC00:x=(w-text_w)/2:y=620:alpha='if(lt(t,22),0,if(lt(t,23),(t-22),1))':enable='between(t,21,24)',
+drawtext=text='Enhance Your Gaming Experience':fontfile='C\:/Windows/Fonts/segoeui.ttf':fontsize=28:fontcolor=0x8892B0@0.8:x=(w-text_w)/2:y=700:alpha='if(lt(t,22.5),0,if(lt(t,23.5),(t-22.5),1))':enable='between(t,21,24)'
+'@
+
+[System.IO.File]::WriteAllText($filterFile, $filter, [System.Text.UTF8Encoding]::new($false))
+Write-Host "Generating promo video..."
+
+& $ffmpeg -y -f lavfi -i "anullsrc=r=44100:cl=stereo" -filter_complex $filter -map 0:a -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -c:a aac -shortest -t 24 $outputFile 2>&1

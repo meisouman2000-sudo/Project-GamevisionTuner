@@ -88,6 +88,43 @@ function App() {
     loadGames();
   }, []);
 
+  // Listen for periodic Steam library updates from main process
+  useEffect(() => {
+    if (!window.gameVisionAPI?.onSteamLibraryUpdated) return;
+
+    const cleanup = window.gameVisionAPI.onSteamLibraryUpdated((updatedGames: Game[]) => {
+      console.log('[Renderer] Steam library updated, new game count:', updatedGames.length);
+
+      setAllGames(_prev => {
+        // Replace with latest scan results
+        return [...updatedGames];
+      });
+
+      // Add newly detected games to displayed list if they aren't already there
+      setDisplayedGames(prev => {
+        const existingIds = new Set(prev.map(g => g.id));
+        const newGames = updatedGames.filter(g => !existingIds.has(g.id));
+
+        if (newGames.length === 0) return prev;
+
+        console.log('[Renderer] Adding new games to display:', newGames.map(g => g.title));
+
+        const updated = [...prev, ...newGames];
+        updated.sort((a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0));
+
+        // Also persist to active games whitelist
+        if (window.gameVisionAPI) {
+          const activeIds = updated.map(g => g.id);
+          window.gameVisionAPI.updateActiveGames(activeIds);
+        }
+
+        return updated;
+      });
+    });
+
+    return cleanup;
+  }, []);
+
   const handlePlay = async (gameId: string) => {
     if (launchingGameId) return; // Prevent double click
 

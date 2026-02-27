@@ -1,0 +1,13 @@
+"AppBuild"
+{
+	"AppID"		"YOUR_APP_ID" // 【重要】ここにSteamworksで発行されたApp IDを入力
+	"Desc"		"GameVision Tuner Build" // ビルドの説明（Steamworks管理画面に表示されます）
+
+	"ContentRoot"	"..\..\release\0.0.1\win-unpacked" // ビルドされたファイルの場所（electron-builderの出力先）
+	"BuildOutput"	"..\output\" // アップロードログ等の出力先
+
+	"Depots"
+	{
+		"YOUR_DEPOT_ID"	"depot_build_1001.vdf" // 【重要】ここにDepot IDを入力
+	}
+}
