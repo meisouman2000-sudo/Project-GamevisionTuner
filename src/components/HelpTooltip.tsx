@@ -9,7 +9,7 @@ export function HelpTooltip() {
 
     return (
         <div
-            className="relative flex items-center z-[100]"
+            className="relative flex items-center z-30"
             onMouseEnter={() => setIsOpen(true)}
             onMouseLeave={() => setIsOpen(false)}
         >

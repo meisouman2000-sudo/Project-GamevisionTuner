@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import React, { useState, useEffect } from 'react';
-import { Settings, Sun, Moon, Zap, Target } from 'lucide-react';
+import { Settings, Sun, Moon, Zap, Target, HelpCircle } from 'lucide-react';
 import { useT } from '../i18n-context';
 
 interface SettingsModalProps {
@@ -82,12 +82,15 @@ export function SettingsModal({ isOpen, onClose, gameTitle, gameId, initialProfi
                                 <h2 className="text-xl font-black text-white uppercase tracking-wider flex items-center gap-2">
                                     <span className="text-electric-cyan"><Settings /></span> {gameTitle}
                                 </h2>
-                                <button
-                                    onClick={onClose}
-                                    className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/50 hover:text-white transition-colors"
-                                >
-                                    ✕
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <SettingsHelp />
+                                    <button
+                                        onClick={onClose}
+                                        className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/50 hover:text-white transition-colors"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Body */}
@@ -190,4 +193,58 @@ function ToySlider({ label, icon, value, onChange, color, isGamma }: { label: st
             </div>
         </div>
     )
+}
+
+function SettingsHelp() {
+    const t = useT();
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div
+            className="relative"
+            onMouseEnter={() => setIsOpen(true)}
+            onMouseLeave={() => setIsOpen(false)}
+        >
+            <button className="w-8 h-8 rounded-full bg-white/10 hover:bg-electric-cyan/20 flex items-center justify-center text-electric-cyan/60 hover:text-electric-cyan transition-colors">
+                <HelpCircle size={18} strokeWidth={2.5} />
+            </button>
+
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className="absolute right-0 top-[130%] w-72 bg-[#0d1b2a] border border-electric-cyan/30 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] p-4 pointer-events-none z-[60]"
+                    >
+                        <h3 className="font-bold text-electric-cyan text-sm mb-2 pb-2 border-b border-white/10">
+                            {t('sm_ob_title')}
+                        </h3>
+                        <ul className="space-y-2 text-xs text-white/80 leading-relaxed">
+                            <li className="flex items-start gap-2">
+                                <span className="text-yellow-400 mt-0.5">☀</span>
+                                <span>{t('sm_ob_brightness')}</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-white mt-0.5">◐</span>
+                                <span>{t('sm_ob_contrast')}</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-green-400 mt-0.5">◎</span>
+                                <span>{t('sm_ob_gamma')}</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <span className="text-pink-400 mt-0.5">⚡</span>
+                                <span>{t('sm_ob_vibrance')}</span>
+                            </li>
+                        </ul>
+                        <div className="mt-3 pt-2 border-t border-white/10 text-xs text-electric-cyan/70">
+                            {t('sm_ob_footer')}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
 }

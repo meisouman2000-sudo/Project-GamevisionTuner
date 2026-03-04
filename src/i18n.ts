@@ -40,6 +40,14 @@ const translations = {
         ob_back: 'Back',
         ob_next: 'Next',
         ob_start: 'Get Started',
+
+        // Settings Modal Onboarding
+        sm_ob_title: 'Slider Guide',
+        sm_ob_brightness: 'Brightness — Adjusts overall screen brightness via NVIDIA settings.',
+        sm_ob_contrast: 'Contrast — Controls the difference between light and dark areas.',
+        sm_ob_gamma: 'Gamma — Fine-tunes mid-tone brightness. Higher = brighter shadows.',
+        sm_ob_vibrance: 'Digital Vibrance — Boosts color saturation for vivid visuals.',
+        sm_ob_footer: 'Save your profile and it will auto-apply every time you launch this game.',
     },
     ja: {
         resetToDefault: '\u30C7\u30D5\u30A9\u30EB\u30C8\u306B\u623B\u3059',
@@ -80,6 +88,14 @@ const translations = {
         ob_back: '戻る',
         ob_next: '次へ',
         ob_start: 'はじめる',
+
+        // Settings Modal Onboarding
+        sm_ob_title: 'スライダーガイド',
+        sm_ob_brightness: '輝度 — NVIDIA設定で画面全体の明るさを調整します。',
+        sm_ob_contrast: 'コントラスト — 明るい部分と暗い部分の差を調整します。',
+        sm_ob_gamma: 'ガンマ — 中間軾の明るさを微調整。高いほど暗い部分が明るくなります。',
+        sm_ob_vibrance: 'デジタルバイブランス — 色彩の鮮やかさを強調します。',
+        sm_ob_footer: 'プロファイルを保存すると、次回からゲーム起動時に自動で適用されます。',
     },
 } as const;
 
