@@ -14,7 +14,6 @@ interface Game {
     installDir: string;
     lastPlayed?: number;
     executable?: string;
-    headerImageUrl?: string; // From Steam Store API
 }
 
 interface Window {

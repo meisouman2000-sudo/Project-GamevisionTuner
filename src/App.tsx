@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { GameCard } from './components/GameCard'
 import { SettingsModal } from './components/SettingsModal'
 import { TitleBar } from './components/TitleBar'
+import { HelpTooltip } from './components/HelpTooltip'
 import { LanguageProvider, useLanguage, useT } from './i18n-context'
-import { Plus, Search, Monitor, Sliders, Globe } from 'lucide-react'
+import { Plus, Search, Monitor, Sliders, Globe, Gamepad2 } from 'lucide-react'
 
 interface Game {
   id: string;
@@ -209,10 +210,6 @@ function AppContent() {
   const handleAddGame = async (game: Game) => {
     if (!displayedGames.find(g => g.id === game.id)) {
       const newDisplayed = [...displayedGames, game];
-
-      // Sort again? User wants sorted.
-      newDisplayed.sort((a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0));
-
       setDisplayedGames(newDisplayed);
 
       setIsAddModalOpen(false);
@@ -269,6 +266,8 @@ function AppContent() {
           </motion.div>
 
           <div className="flex items-center gap-3">
+            <HelpTooltip />
+
             {/* Language Toggle */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -298,17 +297,17 @@ function AppContent() {
           <div className="h-1 flex-1 bg-white/10 rounded-full ml-4" />
         </div>
 
-        {/* Game Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
+        {/* Game List */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 pb-20">
           {loading ? (
-            <div className="col-span-full h-64 flex items-center justify-center">
+            <div className="col-span-full h-40 flex items-center justify-center">
               <div className="flex flex-col items-center gap-4">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                  className="w-12 h-12 border-4 border-electric-cyan border-t-transparent rounded-full"
+                  className="w-10 h-10 border-3 border-electric-cyan border-t-transparent rounded-full"
                 />
-                <p className="text-electric-cyan font-bold tracking-widest animate-pulse">{t('scanning')}</p>
+                <p className="text-electric-cyan font-bold tracking-widest animate-pulse text-sm">{t('scanning')}</p>
               </div>
             </div>
           ) : (
@@ -325,18 +324,18 @@ function AppContent() {
                 />
               ))}
 
-              {/* Add Game Card */}
+              {/* Add Game Button — compact row style */}
               <motion.button
                 layout
                 onClick={() => setIsAddModalOpen(true)}
-                className="group relative bg-[#112240]/50 border-4 border-dashed border-white/10 rounded-3xl overflow-hidden flex flex-col items-center justify-center gap-4 hover:bg-[#112240] hover:border-electric-cyan/50 transition-all cursor-pointer shadow-none hover:shadow-[0_0_20px_rgba(0,243,255,0.1)] aspect-[4/5] md:aspect-auto md:h-full min-h-[250px]"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="group flex items-center gap-4 px-5 py-3.5 rounded-2xl border-2 border-dashed border-white/10 hover:border-electric-cyan/40 hover:bg-white/[0.02] transition-all"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
               >
-                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-electric-cyan/20 transition-colors">
-                  <Plus size={32} className="text-white/30 group-hover:text-electric-cyan" />
+                <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center group-hover:bg-electric-cyan/10 transition-colors border border-white/[0.06]">
+                  <Plus size={20} className="text-white/30 group-hover:text-electric-cyan" />
                 </div>
-                <span className="font-bold text-white/30 group-hover:text-white uppercase tracking-wider">{t('addGame')}</span>
+                <span className="font-bold text-white/30 group-hover:text-white/70 text-sm uppercase tracking-wider">{t('addGame')}</span>
               </motion.button>
             </>
           )}
@@ -393,15 +392,8 @@ function AppContent() {
                     ) : (
                       availableGames.map(game => (
                         <div key={game.id} className="flex items-center gap-4 p-3 hover:bg-white/5 rounded-xl transition-colors group">
-                          <div className="relative w-32 h-[48px] shrink-0 rounded-lg overflow-hidden bg-[#0a1628] shadow-md border border-white/5">
-                            {/* Placeholder/Bg for transparency */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-[#0d1b2a] to-[#1a365d]" />
-                            <img
-                              src={`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.id}/header.jpg`}
-                              alt={game.title}
-                              className="absolute inset-0 w-full h-full object-cover"
-                              onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><rect width="1" height="1" fill="%231a365d"/></svg>' }}
-                            />
+                          <div className="relative w-32 h-[48px] shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-[#0d1b2a] to-[#1a365d] flex items-center justify-center border border-white/5">
+                            <Gamepad2 size={20} className="text-electric-cyan/40" strokeWidth={1.5} />
                           </div>
                           <div className="flex-1">
                             <h4 className="font-bold text-white">

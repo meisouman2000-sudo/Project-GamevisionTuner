@@ -27,6 +27,19 @@ const translations = {
         removeGame: 'Remove Game',
         settingsRestored: 'Display settings restored to default.',
         launchFailed: 'Failed to launch game. Check console for details.',
+
+        // Onboarding
+        ob_title1: 'Welcome to GameVision Tuner',
+        ob_desc1: 'Configure NVIDIA Control Panel display settings (brightness, contrast, digital vibrance) individually for each game. These custom settings are automatically applied when you play.',
+        ob_title2: 'Set Up Profiles',
+        ob_desc2: 'Click the settings icon on any game to adjust its display settings. Preview changes in real-time.',
+        ob_title3: 'Play and Enjoy',
+        ob_desc3: 'Launch games directly from the app. Your custom settings will be applied automatically while the game is running.',
+        ob_title4: 'Keep It Running',
+        ob_desc4: 'GameVision Tuner runs in the background. Close the window to minimize it to the system tray.',
+        ob_back: 'Back',
+        ob_next: 'Next',
+        ob_start: 'Get Started',
     },
     ja: {
         resetToDefault: '\u30C7\u30D5\u30A9\u30EB\u30C8\u306B\u623B\u3059',
@@ -54,6 +67,19 @@ const translations = {
         removeGame: '\u30B2\u30FC\u30E0\u3092\u524A\u9664',
         settingsRestored: '\u30C7\u30A3\u30B9\u30D7\u30EC\u30A4\u8A2D\u5B9A\u3092\u30C7\u30D5\u30A9\u30EB\u30C8\u306B\u623B\u3057\u307E\u3057\u305F',
         launchFailed: '\u30B2\u30FC\u30E0\u306E\u8D77\u52D5\u306B\u5931\u6557\u3057\u307E\u3057\u305F',
+
+        // Onboarding
+        ob_title1: 'GameVision Tunerへようこそ',
+        ob_desc1: 'NVIDIAコントロールパネルの画面設定（輝度、コントラスト、デジタルバイブランスなど）をゲームごとに個別で設定できます。プレイ時にこれらのカスタム設定が自動的に適用されます。',
+        ob_title2: 'プロファイルの設定',
+        ob_desc2: 'ゲームの設定アイコンから表示を調整します。変更はリアルタイムでプレビューできます。',
+        ob_title3: 'ゲームの起動',
+        ob_desc3: 'アプリから直接ゲームを起動。実行中はカスタム設定が自動的に適用され、終了すると元に戻ります。',
+        ob_title4: 'バックグラウンドで準備完了',
+        ob_desc4: 'このアプリはバックグラウンド動作に特化しています。ウィンドウを閉じるとタスクトレイに最小化され、自動適用の準備が整います。',
+        ob_back: '戻る',
+        ob_next: '次へ',
+        ob_start: 'はじめる',
     },
 } as const;
 
