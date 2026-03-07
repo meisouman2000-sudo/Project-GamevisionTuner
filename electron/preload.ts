@@ -24,9 +24,11 @@ contextBridge.exposeInMainWorld('gameVisionAPI', {
   scanSteamLibrary: () => ipcRenderer.invoke('scan-steam-library'),
   saveProfile: (gameId: string, profile: any) => ipcRenderer.invoke('save-profile', gameId, profile),
   loadProfile: (gameId: string) => ipcRenderer.invoke('load-profile', gameId),
+  getSavedProfileIds: (gameIds: string[]) => ipcRenderer.invoke('get-saved-profile-ids', gameIds),
   applySettings: (profile: any) => ipcRenderer.invoke('apply-settings', profile),
   launchGame: (gameId: string, installDir?: string) => ipcRenderer.invoke('launch-game', gameId, installDir),
-  restoreDefaultSettings: () => ipcRenderer.invoke('restore-default-settings'),
+  clearGameProfile: (gameId: string) => ipcRenderer.invoke('clear-game-profile', gameId),
+  restoreDisplayToDefault: () => ipcRenderer.invoke('restore-display-to-default'),
   minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
   maximizeWindow: () => ipcRenderer.invoke('maximize-window'),
   closeWindow: () => ipcRenderer.invoke('close-window'),
@@ -40,4 +42,10 @@ contextBridge.exposeInMainWorld('gameVisionAPI', {
   },
   getLanguage: () => ipcRenderer.invoke('get-language'),
   setLanguage: (lang: string) => ipcRenderer.invoke('set-language', lang),
+
+  // Subscription
+  getSubscriptionStatus: () => ipcRenderer.invoke('get-subscription-status'),
+  getGameLimit: () => ipcRenderer.invoke('get-game-limit'),
+  activateLicense: (licenseKey: string) => ipcRenderer.invoke('activate-license', licenseKey),
+  deactivateLicense: () => ipcRenderer.invoke('deactivate-license'),
 })

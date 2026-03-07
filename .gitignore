@@ -18,6 +18,8 @@ release
 .vscode/*
 !.vscode/extensions.json
 .idea
+.cursor
+.cursorrules
 .DS_Store
 Thumbs.db
 *.suo

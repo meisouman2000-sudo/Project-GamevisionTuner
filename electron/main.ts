@@ -4,6 +4,13 @@ import path from 'node:path'
 import { execFile } from 'node:child_process'
 import Store from 'electron-store'
 import { scanSteamGames } from './steam'
+import {
+  getSubscriptionStatus,
+  activateLicense,
+  deactivateLicense,
+  getGameLimit,
+  revalidateIfNeeded,
+} from './subscription'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -74,6 +81,10 @@ ipcMain.handle('save-profile', async (_event, gameId, profile) => {
 
 ipcMain.handle('load-profile', async (_event, gameId) => {
   return store.get(`profiles.${gameId}`, null);
+})
+
+ipcMain.handle('get-saved-profile-ids', async (_event, gameIds: string[]) => {
+  return gameIds.filter(id => store.has(`profiles.${id}`));
 })
 
 ipcMain.handle('get-language', async () => {
@@ -349,11 +360,16 @@ ipcMain.handle('close-window', () => {
   win?.close();
 });
 
-ipcMain.handle('restore-default-settings', async () => {
-  console.log('Restoring default settings');
-  store.clear();
-  return;
-})
+// Per-game: clear this game's profile and restore display to default
+ipcMain.handle('clear-game-profile', async (_event, gameId: string) => {
+  store.delete(`profiles.${gameId}`);
+  return true;
+});
+
+ipcMain.handle('restore-display-to-default', async () => {
+  restoreDefaultsBackend();
+  return true;
+});
 
 ipcMain.handle('get-active-games', async () => {
   return store.get('activeGames', null); // Returns null if never set
@@ -366,6 +382,24 @@ ipcMain.handle('update-active-games', async (_event, gameIds: string[]) => {
 
 ipcMain.handle('clear-active-games', async () => {
   store.delete('activeGames');
+  return true;
+})
+
+// Subscription IPC Handlers
+ipcMain.handle('get-subscription-status', async () => {
+  return getSubscriptionStatus();
+})
+
+ipcMain.handle('get-game-limit', async () => {
+  return getGameLimit();
+})
+
+ipcMain.handle('activate-license', async (_event, licenseKey: string) => {
+  return activateLicense(licenseKey);
+})
+
+ipcMain.handle('deactivate-license', async () => {
+  deactivateLicense();
   return true;
 })
 
@@ -456,4 +490,5 @@ app.whenReady().then(async () => {
   createWindow();
   startGlobalGameMonitor();
   startLibraryScanner();
+  revalidateIfNeeded();
 })

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import React, { useState, useEffect } from 'react';
-import { Settings, Sun, Moon, Zap, Target, HelpCircle } from 'lucide-react';
+import { Settings, Sun, Moon, Zap, Target, HelpCircle, RotateCcw } from 'lucide-react';
 import { useT } from '../i18n-context';
 
 interface SettingsModalProps {
@@ -11,9 +11,10 @@ interface SettingsModalProps {
     initialProfile?: any;
     onSave: (gameId: string, profile: any) => void;
     onPreview: (profile: any) => void;
+    onResetToDefault?: () => void;
 }
 
-export function SettingsModal({ isOpen, onClose, gameTitle, gameId, initialProfile, onSave, onPreview }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, gameTitle, gameId, initialProfile, onSave, onPreview, onResetToDefault }: SettingsModalProps) {
     const t = useT();
     const [brightness, setBrightness] = useState(50);
     const [contrast, setContrast] = useState(50);
@@ -120,6 +121,20 @@ export function SettingsModal({ isOpen, onClose, gameTitle, gameId, initialProfi
                                     <ToySlider label={t('gamma')} icon={<Target size={16} />} value={gamma} onChange={setGamma} color="text-green-400" isGamma />
                                     <ToySlider label={t('digitalVibrance')} icon={<Zap size={16} />} value={digitalVibrance} onChange={setDigitalVibrance} color="text-panic-pink" />
                                 </div>
+
+                                {/* Reset this game to default */}
+                                {onResetToDefault && (
+                                    <div className="pt-2">
+                                        <button
+                                            type="button"
+                                            onClick={onResetToDefault}
+                                            className="w-full py-2.5 rounded-xl font-bold text-amber-400/80 hover:text-amber-400 hover:bg-amber-500/10 border border-amber-500/20 transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <RotateCcw size={16} />
+                                            {t('resetToDefault')}
+                                        </button>
+                                    </div>
+                                )}
 
                                 {/* Actions */}
                                 <div className="pt-4 flex gap-4">

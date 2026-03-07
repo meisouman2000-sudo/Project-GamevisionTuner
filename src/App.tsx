@@ -1,11 +1,12 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GameCard } from './components/GameCard'
 import { SettingsModal } from './components/SettingsModal'
 import { TitleBar } from './components/TitleBar'
 import { HelpTooltip } from './components/HelpTooltip'
+import { SubscriptionModal, UpgradePrompt } from './components/SubscriptionModal'
 import { LanguageProvider, useLanguage, useT } from './i18n-context'
-import { Plus, Search, Monitor, Sliders, Globe, Gamepad2 } from 'lucide-react'
+import { Plus, Search, Monitor, Sliders, Globe, Gamepad2, Crown, Sparkles } from 'lucide-react'
 
 interface Game {
   id: string;
@@ -15,62 +16,76 @@ interface Game {
 }
 
 function AppContent() {
-  const [allGames, setAllGames] = useState<Game[]>([]); // Store all fetched games
-  const [displayedGames, setDisplayedGames] = useState<Game[]>([]); // Games shown in grid
+  const [allGames, setAllGames] = useState<Game[]>([]);
+  const [displayedGames, setDisplayedGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingGameId, setEditingGameId] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  /* State for profile being edited */
   const [currentProfile, setCurrentProfile] = useState<any>(null);
-
-  /* State for launching feedback to prevent double-clicks */
   const [launchingGameId, setLaunchingGameId] = useState<string | null>(null);
+
+  // Track which games have saved profiles (gameId → true)
+  const [savedProfileIds, setSavedProfileIds] = useState<Set<string>>(new Set());
+
+  // Subscription state
+  const [subscriptionStatus, setSubscriptionStatus] = useState<{
+    active: boolean;
+    licenseKey: string | null;
+    plan: 'free' | 'pro';
+    expiresAt: string | null;
+  }>({ active: false, licenseKey: null, plan: 'free', expiresAt: null });
+  const [gameLimit, setGameLimit] = useState(1);
+  const [isSubModalOpen, setIsSubModalOpen] = useState(false);
+  const [isUpgradePromptOpen, setIsUpgradePromptOpen] = useState(false);
 
   const { language, setLanguage } = useLanguage();
   const t = useT();
 
+  const loadSubscriptionStatus = useCallback(async () => {
+    if (!window.gameVisionAPI?.getSubscriptionStatus) return;
+    const [status, limit] = await Promise.all([
+      window.gameVisionAPI.getSubscriptionStatus(),
+      window.gameVisionAPI.getGameLimit(),
+    ]);
+    setSubscriptionStatus(status);
+    setGameLimit(limit === Infinity ? Infinity : (limit as number));
+  }, []);
+
+  const refreshSavedProfiles = useCallback(async (games: Game[]) => {
+    if (!window.gameVisionAPI?.getSavedProfileIds) return;
+    const gameIds = games.map(g => g.id);
+    const ids = await window.gameVisionAPI.getSavedProfileIds(gameIds);
+    setSavedProfileIds(new Set(ids));
+  }, []);
+
   useEffect(() => {
-    // Load games from Electron API
     const loadGames = async () => {
       try {
         if (window.gameVisionAPI) {
           const [gamesResult, activeGamesIds] = await Promise.all([
             window.gameVisionAPI.scanSteamLibrary(),
-            window.gameVisionAPI.getActiveGames()
+            window.gameVisionAPI.getActiveGames(),
           ]);
-
-          console.log("Loaded Games:", gamesResult);
-          console.log("Active Games:", activeGamesIds);
 
           let visibleGames: Game[] = [];
 
-          // FIRST RUN: No whitelist exists -> Initialize with TOP 5
           if (!activeGamesIds) {
-            console.log("First Run: Initializing Top 5 as Active Whitelist");
-            // Sort by LastPlayed Descending
-            gamesResult.sort((a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0));
-            visibleGames = gamesResult.slice(0, 5);
-
-            // Persist this initial set
-            const initialIds = visibleGames.map(g => g.id);
-            await window.gameVisionAPI.updateActiveGames(initialIds);
-          }
-          // SUBSEQUENT RUNS: Use Whitelist
-          else {
-            // Filter AllGames to only include those in Active List
-            visibleGames = gamesResult.filter(g => activeGamesIds.includes(g.id));
-
-            // Sort by LastPlayed (user preference: "displayed first")
-            visibleGames.sort((a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0));
+            // First run: empty library — user must add games manually
+            visibleGames = [];
+            await window.gameVisionAPI.updateActiveGames([]);
+          } else {
+            visibleGames = gamesResult.filter((g: Game) => activeGamesIds.includes(g.id));
+            visibleGames.sort((a: Game, b: Game) => (b.lastPlayed || 0) - (a.lastPlayed || 0));
           }
 
           setAllGames(gamesResult);
           setDisplayedGames(visibleGames);
 
+          await loadSubscriptionStatus();
+          await refreshSavedProfiles(visibleGames);
         } else {
-          // Mock data for browser testing
           console.warn("Electron API not found, using mocks");
           await new Promise(r => setTimeout(r, 1000));
           const mockGames = [
@@ -82,7 +97,7 @@ function AppContent() {
             { id: '440', title: 'Team Fortress 2', installDir: '', lastPlayed: 500 },
           ];
           setAllGames(mockGames);
-          setDisplayedGames(mockGames.slice(0, 5));
+          setDisplayedGames([]);
         }
       } catch (error) {
         console.error("Failed to load games:", error);
@@ -91,40 +106,15 @@ function AppContent() {
       }
     };
     loadGames();
-  }, []);
+  }, [loadSubscriptionStatus, refreshSavedProfiles]);
 
-  // Listen for periodic Steam library updates from main process
+  // Listen for periodic Steam library updates — only update the "available" pool, NOT auto-add
   useEffect(() => {
     if (!window.gameVisionAPI?.onSteamLibraryUpdated) return;
 
     const cleanup = window.gameVisionAPI.onSteamLibraryUpdated((updatedGames: Game[]) => {
       console.log('[Renderer] Steam library updated, new game count:', updatedGames.length);
-
-      setAllGames(_prev => {
-        // Replace with latest scan results
-        return [...updatedGames];
-      });
-
-      // Add newly detected games to displayed list if they aren't already there
-      setDisplayedGames(prev => {
-        const existingIds = new Set(prev.map(g => g.id));
-        const newGames = updatedGames.filter(g => !existingIds.has(g.id));
-
-        if (newGames.length === 0) return prev;
-
-        console.log('[Renderer] Adding new games to display:', newGames.map(g => g.title));
-
-        const updated = [...prev, ...newGames];
-        updated.sort((a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0));
-
-        // Also persist to active games whitelist
-        if (window.gameVisionAPI) {
-          const activeIds = updated.map(g => g.id);
-          window.gameVisionAPI.updateActiveGames(activeIds);
-        }
-
-        return updated;
-      });
+      setAllGames([...updatedGames]);
     });
 
     return cleanup;
@@ -185,14 +175,22 @@ function AppContent() {
     console.log("Saving Profile", gameId, profile);
     if (window.gameVisionAPI) {
       await window.gameVisionAPI.saveProfile(gameId, profile);
+      setSavedProfileIds(prev => new Set([...prev, gameId]));
     }
   }
 
-  const handleRestoreDefaults = async () => {
-    if (window.gameVisionAPI) {
-      await window.gameVisionAPI.restoreDefaultSettings();
-      alert(t('settingsRestored'));
-    }
+  const handleResetGameToDefault = async (gameId: string) => {
+    if (!window.gameVisionAPI?.clearGameProfile || !window.gameVisionAPI?.restoreDisplayToDefault) return;
+    await window.gameVisionAPI.clearGameProfile(gameId);
+    await window.gameVisionAPI.restoreDisplayToDefault();
+    setCurrentProfile(null);
+    setSavedProfileIds(prev => {
+      const next = new Set(prev);
+      next.delete(gameId);
+      return next;
+    });
+    if (editingGameId === gameId) setEditingGameId(null);
+    alert(t('settingsRestored'));
   }
 
   const handleRemoveGame = async (gameId: string) => {
@@ -208,17 +206,22 @@ function AppContent() {
   }
 
   const handleAddGame = async (game: Game) => {
-    if (!displayedGames.find(g => g.id === game.id)) {
-      const newDisplayed = [...displayedGames, game];
-      setDisplayedGames(newDisplayed);
+    if (displayedGames.find(g => g.id === game.id)) return;
 
+    // Free tier limit check
+    if (!subscriptionStatus.active && displayedGames.length >= gameLimit) {
       setIsAddModalOpen(false);
+      setIsUpgradePromptOpen(true);
+      return;
+    }
 
-      // Persist to Whitelist
-      if (window.gameVisionAPI) {
-        const activeIds = newDisplayed.map(g => g.id);
-        await window.gameVisionAPI.updateActiveGames(activeIds);
-      }
+    const newDisplayed = [...displayedGames, game];
+    setDisplayedGames(newDisplayed);
+    setIsAddModalOpen(false);
+
+    if (window.gameVisionAPI) {
+      const activeIds = newDisplayed.map(g => g.id);
+      await window.gameVisionAPI.updateActiveGames(activeIds);
     }
   }
 
@@ -229,11 +232,29 @@ function AppContent() {
       .filter(g => g.title.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [allGames, displayedGames, searchQuery]);
 
-  const handlePreview = async (profile: any) => {
+  const handlePreview = useCallback(async (profile: any) => {
     if (window.gameVisionAPI) {
       await window.gameVisionAPI.applySettings(profile);
     }
-  }
+  }, []);
+
+  const handleActivateLicense = async (key: string) => {
+    if (!window.gameVisionAPI?.activateLicense) {
+      return { success: false, error: 'API not available' };
+    }
+    const result = await window.gameVisionAPI.activateLicense(key);
+    if (result.success) {
+      await loadSubscriptionStatus();
+    }
+    return result;
+  };
+
+  const handleDeactivateLicense = async () => {
+    if (window.gameVisionAPI?.deactivateLicense) {
+      await window.gameVisionAPI.deactivateLicense();
+      await loadSubscriptionStatus();
+    }
+  };
 
   const toggleLanguage = () => {
     setLanguage(language === 'en' ? 'ja' : 'en');
@@ -268,6 +289,21 @@ function AppContent() {
           <div className="flex items-center gap-3">
             <HelpTooltip />
 
+            {/* Subscription Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsSubModalOpen(true)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold border transition-all ${
+                subscriptionStatus.active
+                  ? 'bg-gradient-to-r from-amber-500/10 to-amber-600/5 text-amber-400 border-amber-400/30 hover:border-amber-400/60'
+                  : 'bg-[#112240] text-white/50 border-white/10 hover:border-white/30 hover:text-white/80'
+              }`}
+            >
+              {subscriptionStatus.active ? <Sparkles size={16} /> : <Crown size={16} />}
+              <span className="text-sm">{subscriptionStatus.active ? t('sub_pro') : t('sub_free')}</span>
+            </motion.button>
+
             {/* Language Toggle */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -279,21 +315,15 @@ function AppContent() {
               <span className="text-sm">{language === 'en' ? 'EN' : 'JA'}</span>
             </motion.button>
 
-            {/* Reset Button */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleRestoreDefaults}
-              className="flex items-center gap-2 bg-[#ff0055] text-white px-6 py-3 rounded-xl font-bold shadow-[0_4px_0_#990033] active:shadow-none active:translate-y-[4px] transition-all hover:bg-[#ff1a66]"
-            >
-              <span className="text-xl">{'\u{1F3E0}'}</span> {t('resetToDefault')}
-            </motion.button>
           </div>
         </header>
 
         {/* Library Header */}
         <div className="flex items-center gap-2 mb-6 px-2">
           <h2 className="text-2xl font-bold text-white tracking-wide">{t('library')}</h2>
+          <span className="text-xs font-bold text-white/30 bg-white/5 px-2.5 py-1 rounded-full ml-2">
+            {displayedGames.length}{!subscriptionStatus.active ? `/${gameLimit}` : ''} {t('sub_gameCount')}
+          </span>
           <div className="h-1 flex-1 bg-white/10 rounded-full ml-4" />
         </div>
 
@@ -312,22 +342,37 @@ function AppContent() {
             </div>
           ) : (
             <>
+              {displayedGames.length === 0 && (
+                <div className="col-span-full py-16 flex flex-col items-center justify-center">
+                  <Gamepad2 size={48} className="text-white/10 mb-4" strokeWidth={1} />
+                  <p className="text-lg font-bold text-white/30 mb-1">{t('sub_emptyLibrary')}</p>
+                  <p className="text-sm text-white/20">{t('sub_emptyLibraryDesc')}</p>
+                </div>
+              )}
+
               {displayedGames.map((game) => (
                 <GameCard
                   key={game.id}
                   {...game}
-                  profileName={currentProfile ? "Custom" : undefined}
+                  profileName={savedProfileIds.has(game.id) ? t('profileConfigured') : undefined}
                   isLaunching={launchingGameId === game.id}
                   onPlay={() => handlePlay(game.id)}
                   onSettings={() => handleSettings(game.id)}
                   onRemove={() => handleRemoveGame(game.id)}
+                  onResetToDefault={() => handleResetGameToDefault(game.id)}
                 />
               ))}
 
-              {/* Add Game Button — compact row style */}
+              {/* Add Game Button */}
               <motion.button
                 layout
-                onClick={() => setIsAddModalOpen(true)}
+                onClick={() => {
+                  if (!subscriptionStatus.active && displayedGames.length >= gameLimit) {
+                    setIsUpgradePromptOpen(true);
+                  } else {
+                    setIsAddModalOpen(true);
+                  }
+                }}
                 className="group flex items-center gap-4 px-5 py-3.5 rounded-2xl border-2 border-dashed border-white/10 hover:border-electric-cyan/40 hover:bg-white/[0.02] transition-all"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
@@ -335,7 +380,12 @@ function AppContent() {
                 <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center group-hover:bg-electric-cyan/10 transition-colors border border-white/[0.06]">
                   <Plus size={20} className="text-white/30 group-hover:text-electric-cyan" />
                 </div>
-                <span className="font-bold text-white/30 group-hover:text-white/70 text-sm uppercase tracking-wider">{t('addGame')}</span>
+                <span className="font-bold text-white/30 group-hover:text-white/70 text-sm uppercase tracking-wider">
+                  {t('addGame')}
+                  {!subscriptionStatus.active && displayedGames.length >= gameLimit && (
+                    <Crown size={12} className="inline ml-2 text-amber-400/60" />
+                  )}
+                </span>
               </motion.button>
             </>
           )}
@@ -350,6 +400,7 @@ function AppContent() {
           initialProfile={currentProfile}
           onSave={handleSaveProfile}
           onPreview={handlePreview}
+          onResetToDefault={editingGameId ? () => handleResetGameToDefault(editingGameId) : undefined}
         />
 
         {/* Add Game Modal */}
@@ -421,6 +472,25 @@ function AppContent() {
             </>
           )}
         </AnimatePresence>
+
+        {/* Subscription Modal */}
+        <SubscriptionModal
+          isOpen={isSubModalOpen}
+          onClose={() => setIsSubModalOpen(false)}
+          subscriptionStatus={subscriptionStatus}
+          onActivate={handleActivateLicense}
+          onDeactivate={handleDeactivateLicense}
+        />
+
+        {/* Upgrade Prompt */}
+        <UpgradePrompt
+          isOpen={isUpgradePromptOpen}
+          onClose={() => setIsUpgradePromptOpen(false)}
+          onUpgrade={() => {
+            setIsUpgradePromptOpen(false);
+            setIsSubModalOpen(true);
+          }}
+        />
       </div>
     </div>
   )

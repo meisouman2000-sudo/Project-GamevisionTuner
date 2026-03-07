@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Play, Settings, X, Gamepad2 } from 'lucide-react';
+import { Play, Settings, X, Gamepad2, RotateCcw } from 'lucide-react';
 import { useT } from '../i18n-context';
 
 interface GameCardProps {
@@ -10,6 +10,7 @@ interface GameCardProps {
     onPlay: () => void;
     onSettings: () => void;
     onRemove?: () => void;
+    onResetToDefault?: () => void;
 }
 
 // Accent colors per card (hashed from appId)
@@ -33,7 +34,7 @@ function getAccent(appId: string) {
     return ACCENTS[Math.abs(hash) % ACCENTS.length];
 }
 
-export function GameCard({ id, title, profileName, isLaunching, onPlay, onSettings, onRemove }: GameCardProps) {
+export function GameCard({ id, title, profileName, isLaunching, onPlay, onSettings, onRemove, onResetToDefault }: GameCardProps) {
     const t = useT();
     const accent = getAccent(id);
 
@@ -84,6 +85,16 @@ export function GameCard({ id, title, profileName, isLaunching, onPlay, onSettin
                     >
                         <Settings size={17} />
                     </motion.button>
+
+                    {onResetToDefault && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onResetToDefault(); }}
+                            className="w-7 h-7 flex items-center justify-center text-white/20 hover:text-amber-400 hover:bg-amber-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                            title={t('resetToDefault')}
+                        >
+                            <RotateCcw size={14} />
+                        </button>
+                    )}
 
                     {onRemove && (
                         <button
