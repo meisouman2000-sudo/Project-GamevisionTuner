@@ -158,99 +158,96 @@ function Navbar() {
    ───────────────────────────────────────────── */
 function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center pt-16 pb-8 overflow-hidden">
+    <section className="relative min-h-screen flex items-center pt-16 pb-8 overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+        style={{ backgroundImage: "url('/images/hero-bg.png')" }}
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#060F1F]/40 via-transparent to-[#060F1F]" />
       <div className="absolute inset-0 grid-bg" />
       <div className="absolute inset-0 hero-glow" />
 
-      {/* Crosshair decoration */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[700px] md:h-[700px] opacity-[0.03] pointer-events-none"
-        aria-hidden="true"
-      >
-        <div className="absolute inset-0 border border-electric-cyan rounded-full" />
-        <div className="absolute inset-12 border border-electric-cyan rounded-full" />
-        <div className="absolute top-0 bottom-0 left-1/2 w-px bg-electric-cyan" />
-        <div className="absolute left-0 right-0 top-1/2 h-px bg-electric-cyan" />
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-2 bg-electric-cyan/10 border border-electric-cyan/20 rounded-full px-5 py-2 mb-8">
-          <Crosshair size={14} className="text-electric-cyan" />
-          <span className="text-xs font-bold text-electric-cyan tracking-wider uppercase">
-            NVIDIA Display Optimizer for FPS Gamers
-          </span>
-        </div>
-
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95] mb-6">
-          暗闇の敵が、
-          <br />
-          <span className="text-electric-cyan text-glow-cyan">
-            丸見えになる。
-          </span>
-        </h1>
-
-        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-          ゲームの起動を自動検知し、NVIDIAディスプレイ設定を瞬時に最適化。
-          <br className="hidden md:block" />
-          デジタルバイブランス・明るさ・コントラストをゲーム別に自動切り替え。
-          <br className="hidden md:block" />
-          終了後は
-          <strong className="text-white">あなたの元の設定に完璧復元</strong>
-          します。
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href={STEAM_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,195,255,0.3)]"
-          >
-            <Download size={20} />
-            Steamでダウンロード
-            <ExternalLink
-              size={16}
-              className="opacity-50 group-hover:opacity-100 transition-opacity"
-            />
-          </a>
-          <a
-            href="#features"
-            className="flex items-center gap-2 text-white/60 hover:text-white px-6 py-4 transition-colors font-bold"
-          >
-            詳しく見る
-            <ChevronDown size={16} className="animate-bounce" />
-          </a>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 mt-12 text-sm">
-          <div className="flex items-center gap-2 text-white/40">
-            <Shield size={16} className="text-juicy-green" />
-            <span>安全設計</span>
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-8 lg:gap-4">
+        {/* Left: Text */}
+        <div className="flex-1 text-center lg:text-left">
+          <div className="inline-flex items-center gap-2 bg-electric-cyan/10 border border-electric-cyan/20 rounded-full px-5 py-2 mb-8">
+            <Crosshair size={14} className="text-electric-cyan" />
+            <span className="text-xs font-bold text-electric-cyan tracking-wider uppercase">
+              NVIDIA Display Optimizer for FPS Gamers
+            </span>
           </div>
-          <div className="hidden sm:block w-px h-4 bg-white/10" />
-          <div className="flex items-center gap-2 text-white/40">
-            <Cpu size={16} className="text-juicy-green" />
-            <span>CPU負荷 0.1%未満</span>
+
+          <h1 className="text-5xl md:text-6xl xl:text-7xl font-black tracking-tight leading-[0.95] mb-6">
+            暗闇の敵が、
+            <br />
+            <span className="text-electric-cyan text-glow-cyan">
+              丸見えになる。
+            </span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-white/60 max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed">
+            ゲームの起動を自動検知し、NVIDIAディスプレイ設定を瞬時に最適化。
+            デジタルバイブランス・明るさ・コントラストをゲーム別に自動切り替え。
+            終了後は
+            <strong className="text-white">あなたの元の設定に完璧復元</strong>
+            します。
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
+            <a
+              href={STEAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,195,255,0.3)]"
+            >
+              <Download size={20} />
+              Steamでダウンロード
+              <ExternalLink
+                size={16}
+                className="opacity-50 group-hover:opacity-100 transition-opacity"
+              />
+            </a>
+            <a
+              href="#features"
+              className="flex items-center gap-2 text-white/60 hover:text-white px-6 py-4 transition-colors font-bold"
+            >
+              詳しく見る
+              <ChevronDown size={16} className="animate-bounce" />
+            </a>
           </div>
-          <div className="hidden sm:block w-px h-4 bg-white/10" />
-          <div className="flex items-center gap-2 text-white/40">
-            <Zap size={16} className="text-juicy-green" />
-            <span>完全自動</span>
+
+          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 md:gap-8 mt-10 text-sm">
+            <div className="flex items-center gap-2 text-white/40">
+              <Shield size={16} className="text-juicy-green" />
+              <span>安全設計</span>
+            </div>
+            <div className="hidden sm:block w-px h-4 bg-white/10" />
+            <div className="flex items-center gap-2 text-white/40">
+              <Cpu size={16} className="text-juicy-green" />
+              <span>CPU負荷 0.1%未満</span>
+            </div>
+            <div className="hidden sm:block w-px h-4 bg-white/10" />
+            <div className="flex items-center gap-2 text-white/40">
+              <Zap size={16} className="text-juicy-green" />
+              <span>完全自動</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Hero App Screenshot */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 mt-16">
-        <div className="relative">
+        {/* Right: Monitor image */}
+        <div className="flex-1 relative flex items-center justify-center lg:justify-end">
           <div
-            className="absolute -inset-6 bg-electric-cyan/[0.06] blur-3xl rounded-3xl pointer-events-none"
+            className="absolute w-[80%] h-[80%] bg-electric-cyan/[0.08] blur-[80px] rounded-full pointer-events-none"
             aria-hidden="true"
           />
-          <ImagePlaceholder
-            label="アプリ メイン画面のスクリーンショット"
-            sub="デスクトップ版 — 1920 × 1080 推奨"
-            className="relative shadow-2xl shadow-black/40"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/hero-monitor.png"
+            alt="GameVision Tuner — Before/After 比較。左は暗く敵が見えない画面、右はデジタルバイブランス適用後の鮮明な画面"
+            width={700}
+            height={450}
+            className="relative w-full max-w-[600px] xl:max-w-[700px] h-auto drop-shadow-[0_0_40px_rgba(0,195,255,0.15)] animate-float"
           />
         </div>
       </div>
@@ -471,8 +468,13 @@ function Features() {
   ]
 
   return (
-    <section id="features" className="py-24 px-6 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-electric-cyan/[0.02] to-transparent pointer-events-none" />
+    <section id="features" className="py-24 px-6 relative overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
+        style={{ backgroundImage: "url('/images/features-bg.png')" }}
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#060F1F] via-transparent to-[#060F1F] pointer-events-none" />
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-16 scroll-fade-in">
           <div className="inline-flex items-center gap-2 bg-juicy-green/10 border border-juicy-green/20 rounded-full px-4 py-1.5 mb-4">
@@ -927,7 +929,12 @@ function FAQ() {
 function FinalCTA() {
   return (
     <section className="py-32 px-6 relative overflow-hidden">
-      <div className="absolute inset-0 hero-glow pointer-events-none" />
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25"
+        style={{ backgroundImage: "url('/images/cta-bg.png')" }}
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#060F1F]/80 via-transparent to-[#060F1F]/80 pointer-events-none" />
       <div className="absolute inset-0 grid-bg pointer-events-none" />
 
       <div className="relative z-10 max-w-3xl mx-auto text-center scroll-fade-in">
