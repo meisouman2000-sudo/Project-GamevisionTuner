@@ -210,7 +210,6 @@ function Hero() {
         ))}
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-[#060F1F]/50 via-transparent to-[#060F1F]" />
-      <div className="absolute inset-0 grid-bg opacity-60" />
       <div className="absolute inset-0 hero-glow" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col items-center">
@@ -987,7 +986,6 @@ function FinalCTA() {
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-[#060F1F]/80 via-transparent to-[#060F1F]/80 pointer-events-none" />
-      <div className="absolute inset-0 grid-bg pointer-events-none" />
 
       <div className="relative z-10 max-w-3xl mx-auto text-center scroll-fade-in">
         <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
