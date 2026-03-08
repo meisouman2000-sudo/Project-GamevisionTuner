@@ -25,6 +25,7 @@ import {
 
 const STEAM_URL =
   'https://store.steampowered.com/app/XXXXXX/GameVision_Tuner/'
+const DOWNLOAD_URL = '#' // Windows版ダウンロードURL（GitHub Releases / 公式サイト等に要設定）
 
 const faqItems = [
   {
@@ -140,13 +141,13 @@ function Navbar() {
         </div>
 
         <a
-          href={STEAM_URL}
+          href={DOWNLOAD_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="bg-electric-cyan text-[#060F1F] px-5 py-2 rounded-lg font-bold text-sm hover:bg-electric-cyan/90 transition-colors flex items-center gap-2"
         >
           <Download size={14} />
-          ダウンロード
+          Windows版をダウンロード
         </a>
       </div>
     </nav>
@@ -196,13 +197,13 @@ function Hero() {
 
           <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
             <a
-              href={STEAM_URL}
+              href={DOWNLOAD_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,195,255,0.3)]"
             >
               <Download size={20} />
-              Steamでダウンロード
+              Windows版をダウンロード
               <ExternalLink
                 size={16}
                 className="opacity-50 group-hover:opacity-100 transition-opacity"
@@ -235,8 +236,8 @@ function Hero() {
           </div>
         </div>
 
-        {/* Right: Before/After monitor (transparent PNG — no bg, no border) */}
-        <div className="flex-1 flex items-center justify-center lg:justify-end">
+        {/* Right: Before/After monitor (透過PNG — 黒背景はmix-blend-modeで馴染ませる) */}
+        <div className="flex-1 flex items-center justify-center lg:justify-end bg-transparent">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/hero-monitor.png"
@@ -244,6 +245,7 @@ function Hero() {
             width={700}
             height={450}
             className="w-full max-w-[600px] xl:max-w-[700px] h-auto"
+            style={{ mixBlendMode: 'lighten' }}
           />
         </div>
       </div>
@@ -728,7 +730,7 @@ function Pricing() {
             </ul>
 
             <a
-              href={STEAM_URL}
+              href={DOWNLOAD_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-8 block w-full text-center bg-white/[0.06] hover:bg-white/[0.1] text-white/80 font-bold py-3.5 rounded-xl transition-colors border border-white/[0.08]"
@@ -798,7 +800,7 @@ function Pricing() {
             </ul>
 
             <a
-              href={STEAM_URL}
+              href={DOWNLOAD_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-8 block w-full text-center bg-electric-cyan hover:bg-electric-cyan/90 text-[#060F1F] font-black py-3.5 rounded-xl transition-colors"
@@ -954,14 +956,26 @@ function FinalCTA() {
           Good Luck, Have Fun!
         </p>
 
+        <div className="mt-10 mb-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/hero-monitor.png"
+            alt="GameVision Tuner — Before/After 比較"
+            width={400}
+            height={260}
+            className="mx-auto w-full max-w-[400px] h-auto opacity-90"
+            style={{ mixBlendMode: 'lighten' }}
+          />
+        </div>
+
         <a
-          href={STEAM_URL}
+          href={DOWNLOAD_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-10 py-5 rounded-xl font-black text-xl hover:scale-105 transition-transform shadow-[0_0_40px_rgba(0,195,255,0.3)]"
         >
           <Download size={24} />
-          Steamで無料ダウンロード
+          Windows版をダウンロード
         </a>
 
         <p className="mt-6 text-xs text-white/30">
