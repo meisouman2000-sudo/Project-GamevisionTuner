@@ -169,84 +169,88 @@ function Hero() {
       <div className="absolute inset-0 grid-bg" />
       <div className="absolute inset-0 hero-glow" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-8 lg:gap-4">
-        {/* Left: Text */}
-        <div className="flex-1 text-center lg:text-left">
-          <div className="inline-flex items-center gap-2 bg-electric-cyan/10 border border-electric-cyan/20 rounded-full px-5 py-2 mb-8">
-            <Crosshair size={14} className="text-electric-cyan" />
-            <span className="text-xs font-bold text-electric-cyan tracking-wider uppercase">
-              NVIDIA Display Optimizer for FPS Gamers
-            </span>
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col items-center">
+        {/* 1行目: テキスト + 画像 */}
+        <div className="w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-4 mb-10">
+          {/* Left: Text */}
+          <div className="flex-1 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 bg-electric-cyan/10 border border-electric-cyan/20 rounded-full px-5 py-2 mb-8">
+              <Crosshair size={14} className="text-electric-cyan" />
+              <span className="text-xs font-bold text-electric-cyan tracking-wider uppercase">
+                NVIDIA Display Optimizer for FPS Gamers
+              </span>
+            </div>
+
+            <h1 className="text-5xl md:text-6xl xl:text-7xl font-black tracking-tight leading-[0.95] mb-6">
+              暗闇の敵が、
+              <br />
+              <span className="text-electric-cyan text-glow-cyan">
+                丸見えになる。
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-white/60 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              ゲームの起動を自動検知し、NVIDIAディスプレイ設定を瞬時に最適化。
+              デジタルバイブランス・明るさ・コントラストをゲーム別に自動切り替え。
+              終了後は
+              <strong className="text-white">あなたの元の設定に完璧復元</strong>
+              します。
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 md:gap-8 mt-8 text-sm">
+              <div className="flex items-center gap-2 text-white/40">
+                <Shield size={16} className="text-juicy-green" />
+                <span>安全設計</span>
+              </div>
+              <div className="hidden sm:block w-px h-4 bg-white/10" />
+              <div className="flex items-center gap-2 text-white/40">
+                <Cpu size={16} className="text-juicy-green" />
+                <span>CPU負荷 0.1%未満</span>
+              </div>
+              <div className="hidden sm:block w-px h-4 bg-white/10" />
+              <div className="flex items-center gap-2 text-white/40">
+                <Zap size={16} className="text-juicy-green" />
+                <span>完全自動</span>
+              </div>
+            </div>
           </div>
 
-          <h1 className="text-5xl md:text-6xl xl:text-7xl font-black tracking-tight leading-[0.95] mb-6">
-            暗闇の敵が、
-            <br />
-            <span className="text-electric-cyan text-glow-cyan">
-              丸見えになる。
-            </span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-white/60 max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed">
-            ゲームの起動を自動検知し、NVIDIAディスプレイ設定を瞬時に最適化。
-            デジタルバイブランス・明るさ・コントラストをゲーム別に自動切り替え。
-            終了後は
-            <strong className="text-white">あなたの元の設定に完璧復元</strong>
-            します。
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
-            <a
-              href={DOWNLOAD_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,195,255,0.3)]"
-            >
-              <Download size={20} />
-              Windows版をダウンロード
-              <ExternalLink
-                size={16}
-                className="opacity-50 group-hover:opacity-100 transition-opacity"
-              />
-            </a>
-            <a
-              href="#features"
-              className="flex items-center gap-2 text-white/60 hover:text-white px-6 py-4 transition-colors font-bold"
-            >
-              詳しく見る
-              <ChevronDown size={16} className="animate-bounce" />
-            </a>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 md:gap-8 mt-10 text-sm">
-            <div className="flex items-center gap-2 text-white/40">
-              <Shield size={16} className="text-juicy-green" />
-              <span>安全設計</span>
-            </div>
-            <div className="hidden sm:block w-px h-4 bg-white/10" />
-            <div className="flex items-center gap-2 text-white/40">
-              <Cpu size={16} className="text-juicy-green" />
-              <span>CPU負荷 0.1%未満</span>
-            </div>
-            <div className="hidden sm:block w-px h-4 bg-white/10" />
-            <div className="flex items-center gap-2 text-white/40">
-              <Zap size={16} className="text-juicy-green" />
-              <span>完全自動</span>
-            </div>
+          {/* Right: Before/After monitor */}
+          <div className="flex-1 flex items-center justify-center lg:justify-end bg-transparent">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/hero-monitor.png"
+              alt="GameVision Tuner — Before/After 比較。左は暗く敵が見えない画面、右はデジタルバイブランス適用後の鮮明な画面"
+              width={700}
+              height={450}
+              className="w-full max-w-[600px] xl:max-w-[700px] h-auto"
+              style={{ mixBlendMode: 'lighten' }}
+            />
           </div>
         </div>
 
-        {/* Right: Before/After monitor (透過PNG — 黒背景はmix-blend-modeで馴染ませる) */}
-        <div className="flex-1 flex items-center justify-center lg:justify-end bg-transparent">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/hero-monitor.png"
-            alt="GameVision Tuner — Before/After 比較。左は暗く敵が見えない画面、右はデジタルバイブランス適用後の鮮明な画面"
-            width={700}
-            height={450}
-            className="w-full max-w-[600px] xl:max-w-[700px] h-auto"
-            style={{ mixBlendMode: 'lighten' }}
-          />
+        {/* 2行目: CTA（文章と画像の下） */}
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <a
+            href={DOWNLOAD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,195,255,0.3)]"
+          >
+            <Download size={20} />
+            Windows版をダウンロード
+            <ExternalLink
+              size={16}
+              className="opacity-50 group-hover:opacity-100 transition-opacity"
+            />
+          </a>
+          <a
+            href="#features"
+            className="flex items-center gap-2 text-white/60 hover:text-white px-6 py-4 transition-colors font-bold"
+          >
+            詳しく見る
+            <ChevronDown size={16} className="animate-bounce" />
+          </a>
         </div>
       </div>
     </section>
@@ -944,7 +948,7 @@ function FinalCTA() {
 
       <div className="relative z-10 max-w-3xl mx-auto text-center scroll-fade-in">
         <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
-          面倒な設定変更は、
+          面倒な設定変更は
           <br />
           <span className="text-electric-cyan text-glow-cyan">
             もう終わり。
@@ -955,18 +959,6 @@ function FinalCTA() {
           <br />
           Good Luck, Have Fun!
         </p>
-
-        <div className="mt-10 mb-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/hero-monitor.png"
-            alt="GameVision Tuner — Before/After 比較"
-            width={400}
-            height={260}
-            className="mx-auto w-full max-w-[400px] h-auto opacity-90"
-            style={{ mixBlendMode: 'lighten' }}
-          />
-        </div>
 
         <a
           href={DOWNLOAD_URL}
