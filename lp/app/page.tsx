@@ -235,19 +235,19 @@ function Hero() {
           </div>
         </div>
 
-        {/* Right: FPS game scene */}
+        {/* Right: Before/After monitor */}
         <div className="flex-1 relative flex items-center justify-center lg:justify-end">
           <div
-            className="absolute w-[80%] h-[80%] bg-electric-cyan/[0.08] blur-[80px] rounded-full pointer-events-none"
+            className="absolute w-[60%] h-[60%] bg-electric-cyan/[0.08] blur-[100px] rounded-full pointer-events-none"
             aria-hidden="true"
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/hero-fps.png"
-            alt="FPSゲーム画面 — 暗い画面と明るい画面の比較。ディスプレイ設定の最適化で視認性が劇的に向上"
+            src="/images/hero-monitor.png"
+            alt="GameVision Tuner — Before/After 比較。左は暗く敵が見えない画面、右はデジタルバイブランス適用後の鮮明な画面"
             width={700}
             height={450}
-            className="relative w-full max-w-[600px] xl:max-w-[700px] h-auto rounded-2xl border border-white/10 shadow-2xl shadow-electric-cyan/10"
+            className="relative w-full max-w-[600px] xl:max-w-[700px] h-auto drop-shadow-[0_0_60px_rgba(0,195,255,0.12)]"
           />
         </div>
       </div>
