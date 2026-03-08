@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #060F1F;
+}
+
+/* ── Grid background ── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 195, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 195, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ── Radial hero glow ── */
+.hero-glow {
+  background: radial-gradient(
+    ellipse at 50% 30%,
+    rgba(0, 195, 255, 0.12) 0%,
+    transparent 60%
+  );
+}
+
+/* ── Text glow ── */
+.text-glow-cyan {
+  text-shadow:
+    0 0 20px rgba(0, 195, 255, 0.5),
+    0 0 60px rgba(0, 195, 255, 0.2);
+}
+
+/* ── Card hover glow ── */
+.card-glow {
+  transition: all 0.3s ease;
+}
+.card-glow:hover {
+  box-shadow:
+    0 0 30px rgba(0, 195, 255, 0.08),
+    0 0 60px rgba(0, 195, 255, 0.04);
+}
+
+/* ── Scroll-driven fade-in animation ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-fade-in {
+  animation: fadeInUp 0.8s ease-out both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 35%;
+}
+
+@supports not (animation-timeline: view()) {
+  .scroll-fade-in {
+    animation: fadeInUp 0.7s ease-out both;
+  }
+}
+
+/* ── FAQ accordion ── */
+details summary::-webkit-details-marker {
+  display: none;
+}
+details summary::marker {
+  display: none;
+  content: '';
+}
+details[open] .faq-chevron {
+  transform: rotate(180deg);
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #060F1F;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a365d;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00C3FF;
+}
+
+/* ── Separator line glow ── */
+.line-glow {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 195, 255, 0.3),
+    transparent
+  );
+}

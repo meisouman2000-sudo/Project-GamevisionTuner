@@ -13,6 +13,8 @@ dist-electron
 dist-ssr
 release
 *.local
+.next
+out
 
 # Editor directories and files
 .vscode/*
@@ -30,3 +32,8 @@ Thumbs.db
 
 # コンパイル済みバイナリ（ソースのみ管理）
 backend/*.exe
+
+# 環境変数（キー・シークレットを記載。リポジトリに含めない）
+.env
+.env.local
+.env.*.local
