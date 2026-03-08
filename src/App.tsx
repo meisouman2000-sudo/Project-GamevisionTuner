@@ -29,13 +29,12 @@ function AppContent() {
   // Track which games have saved profiles (gameId → true)
   const [savedProfileIds, setSavedProfileIds] = useState<Set<string>>(new Set());
 
-  // Subscription state
-  const [subscriptionStatus, setSubscriptionStatus] = useState<{
-    active: boolean;
-    licenseKey: string | null;
-    plan: 'free' | 'pro';
-    expiresAt: string | null;
-  }>({ active: false, licenseKey: null, plan: 'free', expiresAt: null });
+  // Auth + Subscription state
+  const [authState, setAuthState] = useState<AuthState>({
+    loggedIn: false,
+    user: null,
+    subscription: { plan: 'free', status: 'inactive', currentPeriodEnd: null },
+  });
   const [gameLimit, setGameLimit] = useState(1);
   const [isSubModalOpen, setIsSubModalOpen] = useState(false);
   const [isUpgradePromptOpen, setIsUpgradePromptOpen] = useState(false);
@@ -43,13 +42,11 @@ function AppContent() {
   const { language, setLanguage } = useLanguage();
   const t = useT();
 
-  const loadSubscriptionStatus = useCallback(async () => {
-    if (!window.gameVisionAPI?.getSubscriptionStatus) return;
-    const [status, limit] = await Promise.all([
-      window.gameVisionAPI.getSubscriptionStatus(),
-      window.gameVisionAPI.getGameLimit(),
-    ]);
-    setSubscriptionStatus(status);
+  const loadAuthState = useCallback(async () => {
+    if (!window.gameVisionAPI?.getAuthState) return;
+    const state = await window.gameVisionAPI.getAuthState();
+    setAuthState(state);
+    const limit = await window.gameVisionAPI.getGameLimit(state.subscription.plan);
     setGameLimit(limit === Infinity ? Infinity : (limit as number));
   }, []);
 
@@ -83,7 +80,7 @@ function AppContent() {
           setAllGames(gamesResult);
           setDisplayedGames(visibleGames);
 
-          await loadSubscriptionStatus();
+          await loadAuthState();
           await refreshSavedProfiles(visibleGames);
         } else {
           console.warn("Electron API not found, using mocks");
@@ -106,7 +103,7 @@ function AppContent() {
       }
     };
     loadGames();
-  }, [loadSubscriptionStatus, refreshSavedProfiles]);
+  }, [loadAuthState, refreshSavedProfiles]);
 
   // Listen for periodic Steam library updates — only update the "available" pool, NOT auto-add
   useEffect(() => {
@@ -208,8 +205,7 @@ function AppContent() {
   const handleAddGame = async (game: Game) => {
     if (displayedGames.find(g => g.id === game.id)) return;
 
-    // Free tier limit check
-    if (!subscriptionStatus.active && displayedGames.length >= gameLimit) {
+    if (authState.subscription.plan !== 'pro' && displayedGames.length >= gameLimit) {
       setIsAddModalOpen(false);
       setIsUpgradePromptOpen(true);
       return;
@@ -238,23 +234,31 @@ function AppContent() {
     }
   }, []);
 
-  const handleActivateLicense = async (key: string) => {
-    if (!window.gameVisionAPI?.activateLicense) {
-      return { success: false, error: 'API not available' };
-    }
-    const result = await window.gameVisionAPI.activateLicense(key);
-    if (result.success) {
-      await loadSubscriptionStatus();
-    }
-    return result;
-  };
+  const handleSignIn = useCallback(async () => {
+    if (!window.gameVisionAPI?.signInWithGoogle) return { success: false, error: 'API not available' };
+    return window.gameVisionAPI.signInWithGoogle();
+  }, []);
 
-  const handleDeactivateLicense = async () => {
-    if (window.gameVisionAPI?.deactivateLicense) {
-      await window.gameVisionAPI.deactivateLicense();
-      await loadSubscriptionStatus();
+  const handleSignOut = useCallback(async () => {
+    if (window.gameVisionAPI?.signOut) {
+      await window.gameVisionAPI.signOut();
+      await loadAuthState();
     }
-  };
+  }, [loadAuthState]);
+
+  const handleCheckout = useCallback(async (interval: 'month' | 'year') => {
+    if (!window.gameVisionAPI?.createCheckoutSession) return { url: null, error: 'API not available' };
+    return window.gameVisionAPI.createCheckoutSession(interval);
+  }, []);
+
+  const handleManageSubscription = useCallback(async () => {
+    if (!window.gameVisionAPI?.createPortalSession) return { url: null, error: 'API not available' };
+    return window.gameVisionAPI.createPortalSession();
+  }, []);
+
+  const handleOpenUrl = useCallback((url: string) => {
+    window.gameVisionAPI?.openExternalUrl?.(url);
+  }, []);
 
   const toggleLanguage = () => {
     setLanguage(language === 'en' ? 'ja' : 'en');
@@ -295,13 +299,13 @@ function AppContent() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsSubModalOpen(true)}
               className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold border transition-all ${
-                subscriptionStatus.active
+                authState.subscription.plan === 'pro'
                   ? 'bg-gradient-to-r from-amber-500/10 to-amber-600/5 text-amber-400 border-amber-400/30 hover:border-amber-400/60'
                   : 'bg-[#112240] text-white/50 border-white/10 hover:border-white/30 hover:text-white/80'
               }`}
             >
-              {subscriptionStatus.active ? <Sparkles size={16} /> : <Crown size={16} />}
-              <span className="text-sm">{subscriptionStatus.active ? t('sub_pro') : t('sub_free')}</span>
+              {authState.subscription.plan === 'pro' ? <Sparkles size={16} /> : <Crown size={16} />}
+              <span className="text-sm">{authState.subscription.plan === 'pro' ? t('sub_pro') : t('sub_free')}</span>
             </motion.button>
 
             {/* Language Toggle */}
@@ -322,7 +326,7 @@ function AppContent() {
         <div className="flex items-center gap-2 mb-6 px-2">
           <h2 className="text-2xl font-bold text-white tracking-wide">{t('library')}</h2>
           <span className="text-xs font-bold text-white/30 bg-white/5 px-2.5 py-1 rounded-full ml-2">
-            {displayedGames.length}{!subscriptionStatus.active ? `/${gameLimit}` : ''} {t('sub_gameCount')}
+            {displayedGames.length}{authState.subscription.plan !== 'pro' ? `/${gameLimit}` : ''} {t('sub_gameCount')}
           </span>
           <div className="h-1 flex-1 bg-white/10 rounded-full ml-4" />
         </div>
@@ -367,7 +371,7 @@ function AppContent() {
               <motion.button
                 layout
                 onClick={() => {
-                  if (!subscriptionStatus.active && displayedGames.length >= gameLimit) {
+                  if (authState.subscription.plan !== 'pro' && displayedGames.length >= gameLimit) {
                     setIsUpgradePromptOpen(true);
                   } else {
                     setIsAddModalOpen(true);
@@ -382,7 +386,7 @@ function AppContent() {
                 </div>
                 <span className="font-bold text-white/30 group-hover:text-white/70 text-sm uppercase tracking-wider">
                   {t('addGame')}
-                  {!subscriptionStatus.active && displayedGames.length >= gameLimit && (
+                  {authState.subscription.plan !== 'pro' && displayedGames.length >= gameLimit && (
                     <Crown size={12} className="inline ml-2 text-amber-400/60" />
                   )}
                 </span>
@@ -477,9 +481,13 @@ function AppContent() {
         <SubscriptionModal
           isOpen={isSubModalOpen}
           onClose={() => setIsSubModalOpen(false)}
-          subscriptionStatus={subscriptionStatus}
-          onActivate={handleActivateLicense}
-          onDeactivate={handleDeactivateLicense}
+          authState={authState}
+          onSignIn={handleSignIn}
+          onSignOut={handleSignOut}
+          onCheckout={handleCheckout}
+          onManage={handleManageSubscription}
+          onOpenUrl={handleOpenUrl}
+          onRefreshAuth={loadAuthState}
         />
 
         {/* Upgrade Prompt */}

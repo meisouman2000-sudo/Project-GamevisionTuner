@@ -43,9 +43,12 @@ contextBridge.exposeInMainWorld('gameVisionAPI', {
   getLanguage: () => ipcRenderer.invoke('get-language'),
   setLanguage: (lang: string) => ipcRenderer.invoke('set-language', lang),
 
-  // Subscription
-  getSubscriptionStatus: () => ipcRenderer.invoke('get-subscription-status'),
-  getGameLimit: () => ipcRenderer.invoke('get-game-limit'),
-  activateLicense: (licenseKey: string) => ipcRenderer.invoke('activate-license', licenseKey),
-  deactivateLicense: () => ipcRenderer.invoke('deactivate-license'),
+  // Auth + Subscription
+  getAuthState: () => ipcRenderer.invoke('get-auth-state'),
+  getGameLimit: (plan: string) => ipcRenderer.invoke('get-game-limit', plan),
+  signInWithGoogle: () => ipcRenderer.invoke('sign-in-with-google'),
+  signOut: () => ipcRenderer.invoke('sign-out'),
+  createCheckoutSession: (interval: string) => ipcRenderer.invoke('create-checkout-session', interval),
+  createPortalSession: () => ipcRenderer.invoke('create-portal-session'),
+  openExternalUrl: (url: string) => ipcRenderer.invoke('open-external-url', url),
 })

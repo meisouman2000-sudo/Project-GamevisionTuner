@@ -5,23 +5,34 @@ interface Profile {
     brightness: number;
     contrast: number;
     gamma: number;
-    digitalVibrance: number; // 0-100
+    digitalVibrance: number;
 }
 
 interface Game {
-    id: string; // AppID
+    id: string;
     title: string;
     installDir: string;
     lastPlayed?: number;
     executable?: string;
 }
 
-interface SubscriptionStatus {
-    active: boolean;
-    licenseKey: string | null;
+interface AuthUser {
+    id: string;
+    email: string | null;
+    displayName: string | null;
+    avatarUrl: string | null;
+}
+
+interface SubscriptionInfo {
     plan: 'free' | 'pro';
-    expiresAt: string | null;
-    lastValidated: string | null;
+    status: string;
+    currentPeriodEnd: string | null;
+}
+
+interface AuthState {
+    loggedIn: boolean;
+    user: AuthUser | null;
+    subscription: SubscriptionInfo;
 }
 
 interface Window {
@@ -42,9 +53,13 @@ interface Window {
         onSteamLibraryUpdated: (callback: (games: Game[]) => void) => (() => void);
         getLanguage: () => Promise<string>;
         setLanguage: (lang: string) => Promise<boolean>;
-        getSubscriptionStatus: () => Promise<SubscriptionStatus>;
-        getGameLimit: () => Promise<number>;
-        activateLicense: (licenseKey: string) => Promise<{ success: boolean; error?: string }>;
-        deactivateLicense: () => Promise<boolean>;
+        // Auth + Subscription
+        getAuthState: () => Promise<AuthState>;
+        getGameLimit: (plan: string) => Promise<number>;
+        signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+        signOut: () => Promise<boolean>;
+        createCheckoutSession: (interval: string) => Promise<{ url: string | null; error?: string }>;
+        createPortalSession: () => Promise<{ url: string | null; error?: string }>;
+        openExternalUrl: (url: string) => Promise<boolean>;
     }
 }

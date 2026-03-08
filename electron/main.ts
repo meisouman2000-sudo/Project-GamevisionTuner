@@ -5,11 +5,12 @@ import { execFile } from 'node:child_process'
 import Store from 'electron-store'
 import { scanSteamGames } from './steam'
 import {
-  getSubscriptionStatus,
-  activateLicense,
-  deactivateLicense,
+  getAuthState,
   getGameLimit,
-  revalidateIfNeeded,
+  signInWithGoogle,
+  signOut,
+  createCheckoutSession,
+  createPortalSession,
 } from './subscription'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -385,21 +386,34 @@ ipcMain.handle('clear-active-games', async () => {
   return true;
 })
 
-// Subscription IPC Handlers
-ipcMain.handle('get-subscription-status', async () => {
-  return getSubscriptionStatus();
+// Auth + Subscription IPC Handlers
+ipcMain.handle('get-auth-state', async () => {
+  return getAuthState();
 })
 
-ipcMain.handle('get-game-limit', async () => {
-  return getGameLimit();
+ipcMain.handle('get-game-limit', async (_event, plan: string) => {
+  return getGameLimit(plan as 'free' | 'pro');
 })
 
-ipcMain.handle('activate-license', async (_event, licenseKey: string) => {
-  return activateLicense(licenseKey);
+ipcMain.handle('sign-in-with-google', async () => {
+  return signInWithGoogle();
 })
 
-ipcMain.handle('deactivate-license', async () => {
-  deactivateLicense();
+ipcMain.handle('sign-out', async () => {
+  await signOut();
+  return true;
+})
+
+ipcMain.handle('create-checkout-session', async (_event, interval: string) => {
+  return createCheckoutSession(interval as 'month' | 'year');
+})
+
+ipcMain.handle('create-portal-session', async () => {
+  return createPortalSession();
+})
+
+ipcMain.handle('open-external-url', async (_event, url: string) => {
+  await shell.openExternal(url);
   return true;
 })
 
@@ -490,5 +504,4 @@ app.whenReady().then(async () => {
   createWindow();
   startGlobalGameMonitor();
   startLibraryScanner();
-  revalidateIfNeeded();
 })

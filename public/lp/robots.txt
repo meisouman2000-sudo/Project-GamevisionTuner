@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://gamevisiontuner.com/sitemap.xml

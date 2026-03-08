@@ -1,11 +1,44 @@
 import { defineConfig } from 'vite'
 import path from 'node:path'
+import fs from 'node:fs'
 import electron from 'vite-plugin-electron/simple'
 import react from '@vitejs/plugin-react'
+
+// /lp と /lp/ で public/lp/index.html を返す（メインアプリのSPAフォールバックを避ける）
+function serveLpIndex() {
+  return {
+    name: 'serve-lp-index',
+    configureServer(server: {
+      middlewares: { use: (fn: (req: any, res: any, next: () => void) => void) => void; stack?: Array<{ route: string; handle: (req: any, res: any, next: () => void) => void }> }
+    }) {
+      const lpMiddleware = (req: any, res: any, next: () => void) => {
+        const url = req.url?.split('?')[0] ?? ''
+        if (url === '/lp' || url === '/lp/') {
+          const lpIndex = path.join(process.cwd(), 'public', 'lp', 'index.html')
+          if (fs.existsSync(lpIndex)) {
+            res.statusCode = 200
+            res.setHeader('Content-Type', 'text/html')
+            res.end(fs.readFileSync(lpIndex, 'utf-8'))
+            return
+          }
+        }
+        next()
+      }
+      // 先頭に挿入して SPA フォールバックより前に /lp を処理
+      const stack = (server.middlewares as any).stack
+      if (Array.isArray(stack)) {
+        stack.unshift({ route: '', handle: lpMiddleware })
+      } else {
+        server.middlewares.use(lpMiddleware)
+      }
+    },
+  }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    serveLpIndex(),
     react(),
     electron({
       main: {
