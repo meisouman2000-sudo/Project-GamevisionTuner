@@ -235,7 +235,7 @@ function Hero() {
           </div>
         </div>
 
-        {/* Right: Monitor image */}
+        {/* Right: FPS game scene */}
         <div className="flex-1 relative flex items-center justify-center lg:justify-end">
           <div
             className="absolute w-[80%] h-[80%] bg-electric-cyan/[0.08] blur-[80px] rounded-full pointer-events-none"
@@ -243,11 +243,11 @@ function Hero() {
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/hero-monitor.png"
-            alt="GameVision Tuner — Before/After 比較。左は暗く敵が見えない画面、右はデジタルバイブランス適用後の鮮明な画面"
+            src="/images/hero-fps.png"
+            alt="FPSゲーム画面 — 暗い画面と明るい画面の比較。ディスプレイ設定の最適化で視認性が劇的に向上"
             width={700}
             height={450}
-            className="relative w-full max-w-[600px] xl:max-w-[700px] h-auto drop-shadow-[0_0_40px_rgba(0,195,255,0.15)] animate-float"
+            className="relative w-full max-w-[600px] xl:max-w-[700px] h-auto rounded-2xl border border-white/10 shadow-2xl shadow-electric-cyan/10"
           />
         </div>
       </div>
@@ -345,8 +345,8 @@ function AppShowcase() {
       title: 'Steamライブラリから\nゲームを自動検出',
       description:
         'インストール済みのSteamゲームを自動でスキャン。お気に入りのFPSタイトルをワンクリックで追加するだけ。面倒なパス設定やID入力は一切不要です。',
-      imageLabel: 'ゲームライブラリ一覧画面',
-      imageSub: 'ゲーム追加モーダル / ライブラリ画面',
+      image: '/images/showcase-library.png',
+      imageAlt: 'ゲームライブラリ一覧画面 — Steamから自動検出されたゲームをワンクリックで追加',
       icon: Gamepad2,
       iconColor: 'text-electric-cyan',
       reverse: false,
@@ -356,8 +356,8 @@ function AppShowcase() {
       title: '直感的なスライダーで\n完璧な設定を',
       description:
         '明るさ・コントラスト・ガンマ・デジタルバイブランスを直感的に調整。プレビュー機能でリアルタイムに画面を確認しながら、あなただけの最強プロファイルを作成。',
-      imageLabel: '設定スライダー画面',
-      imageSub: 'プロファイル編集 / プレビュー画面',
+      image: '/images/showcase-settings-real.png',
+      imageAlt: 'GameVision Tuner 設定画面 — スライダーでディスプレイ設定を調整しプロファイル保存',
       icon: Sliders,
       iconColor: 'text-juicy-green',
       reverse: true,
@@ -367,8 +367,8 @@ function AppShowcase() {
       title: '起動から終了まで\nすべて自動',
       description:
         'ゲームの起動を自動検知し、保存済みプロファイルを瞬時に適用。終了後はあなたの元のデスクトップ設定に完璧復元。一度設定したら、あとは忘れてOK。',
-      imageLabel: '自動切り替えの Before / After',
-      imageSub: 'デジタルバイブランス適用前後の比較イメージ',
+      image: '/images/showcase-monitor.png',
+      imageAlt: 'Before/After 比較 — デジタルバイブランス適用前後の視認性の変化',
       icon: RefreshCw,
       iconColor: 'text-electric-cyan',
       reverse: false,
@@ -410,10 +410,13 @@ function AppShowcase() {
                   className="absolute -inset-4 bg-electric-cyan/[0.04] blur-2xl rounded-3xl pointer-events-none"
                   aria-hidden="true"
                 />
-                <ImagePlaceholder
-                  label={item.imageLabel}
-                  sub={item.imageSub}
-                  className="relative"
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.image}
+                  alt={item.imageAlt}
+                  width={600}
+                  height={340}
+                  className="relative w-full rounded-2xl border border-white/10 shadow-2xl shadow-black/40"
                 />
               </div>
             </div>
@@ -524,8 +527,8 @@ function HowItWorks() {
       description:
         'Steamライブラリから自動検出されたゲームの中から、設定を最適化したいタイトルを選んで追加します。',
       icon: Gamepad2,
-      imageLabel: 'ゲーム追加画面',
-      imageSub: 'Steamライブラリ検出 → ゲーム選択',
+      image: '/images/step-add-game.png',
+      imageAlt: 'ゲームライブラリからタイトルを選んで追加する画面',
     },
     {
       num: '02',
@@ -533,8 +536,8 @@ function HowItWorks() {
       description:
         '直感的なスライダーで明るさ・コントラスト・ガンマ・デジタルバイブランスをお好みに調整して保存。',
       icon: Sliders,
-      imageLabel: '設定調整画面',
-      imageSub: 'スライダー操作 → プロファイル保存',
+      image: '/images/step-adjust.png',
+      imageAlt: 'ディスプレイ設定スライダーを操作してプロファイルを保存する画面',
     },
     {
       num: '03',
@@ -542,8 +545,8 @@ function HowItWorks() {
       description:
         'ゲーム起動で設定を自動適用、終了で自動復元。あなたはゲームに集中するだけ。',
       icon: Zap,
-      imageLabel: '自動適用フロー',
-      imageSub: '起動検知 → 設定適用 → 終了検知 → 復元',
+      image: '/images/step-auto.png',
+      imageAlt: 'ゲーム起動→設定適用→終了→復元の自動フロー図',
     },
   ]
 
@@ -584,9 +587,13 @@ function HowItWorks() {
 
               {/* Image */}
               <div className="flex-1 w-full">
-                <ImagePlaceholder
-                  label={step.imageLabel}
-                  sub={step.imageSub}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={step.image}
+                  alt={step.imageAlt}
+                  width={600}
+                  height={340}
+                  className="w-full rounded-2xl border border-white/[0.08] shadow-xl shadow-black/30"
                 />
               </div>
             </div>
