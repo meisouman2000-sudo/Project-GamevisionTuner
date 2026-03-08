@@ -4,7 +4,10 @@ import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
-const SITE_URL = 'https://gamevisiontuner.com'
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ??
+  'https://project-gamevision-tuner.vercel.app'
 const SITE_NAME = 'GameVision Tuner'
 const DESCRIPTION =
   'FPSゲーマー必携！NVIDIAディスプレイ設定をゲームごとに自動切り替え。デジタルバイブランス・明るさ・コントラスト・ガンマをワンクリックで最適化。ゲーム終了後は自動で元の設定に完璧復元。Valorant・CS2・Apex対応。'
