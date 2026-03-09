@@ -27,38 +27,6 @@ const STEAM_URL =
   'https://store.steampowered.com/app/XXXXXX/GameVision_Tuner/'
 const DOWNLOAD_URL = '#' // Windows版ダウンロードURL（GitHub Releases / 公式サイト等に要設定）
 
-const HERO_PARTICLES = [
-  { x: 8, y: 15, size: 3, delay: 0, duration: 14 },
-  { x: 22, y: 25, size: 2, delay: 2, duration: 16 },
-  { x: 75, y: 20, size: 4, delay: 1, duration: 13 },
-  { x: 90, y: 35, size: 2, delay: 3, duration: 15 },
-  { x: 15, y: 55, size: 3, delay: 1.5, duration: 17 },
-  { x: 50, y: 45, size: 2, delay: 0.5, duration: 12 },
-  { x: 85, y: 60, size: 3, delay: 2.5, duration: 14 },
-  { x: 30, y: 70, size: 2, delay: 4, duration: 18 },
-  { x: 65, y: 75, size: 3, delay: 1, duration: 15 },
-  { x: 5, y: 40, size: 2, delay: 3.5, duration: 16 },
-  { x: 95, y: 50, size: 2, delay: 0.8, duration: 13 },
-  { x: 40, y: 18, size: 3, delay: 2, duration: 14 },
-  { x: 58, y: 28, size: 2, delay: 1.2, duration: 17 },
-  { x: 12, y: 82, size: 2, delay: 2.8, duration: 15 },
-  { x: 78, y: 12, size: 3, delay: 0.3, duration: 16 },
-  { x: 25, y: 42, size: 2, delay: 3.2, duration: 12 },
-  { x: 70, y: 52, size: 3, delay: 1.8, duration: 14 },
-  { x: 45, y: 65, size: 2, delay: 2.2, duration: 18 },
-  { x: 88, y: 78, size: 2, delay: 0.6, duration: 13 },
-  { x: 18, y: 32, size: 3, delay: 4.2, duration: 15 },
-  { x: 62, y: 38, size: 2, delay: 1.4, duration: 16 },
-  { x: 35, y: 58, size: 2, delay: 2.6, duration: 14 },
-  { x: 82, y: 42, size: 3, delay: 0.9, duration: 17 },
-  { x: 52, y: 8, size: 2, delay: 3.8, duration: 12 },
-  { x: 8, y: 68, size: 2, delay: 1.6, duration: 15 },
-  { x: 92, y: 22, size: 3, delay: 2.4, duration: 14 },
-  { x: 38, y: 85, size: 2, delay: 0.2, duration: 16 },
-  { x: 72, y: 65, size: 2, delay: 3.4, duration: 13 },
-  { x: 48, y: 52, size: 3, delay: 2.1, duration: 18 },
-]
-
 const faqItems = [
   {
     q: 'NVIDIA GPUじゃないと使えませんか？',
@@ -179,7 +147,7 @@ function Navbar() {
           className="bg-electric-cyan text-[#060F1F] px-5 py-2 rounded-lg font-bold text-sm hover:bg-electric-cyan/90 transition-colors flex items-center gap-2"
         >
           <Download size={14} />
-          Windows版をダウンロード
+          近日公開
         </a>
       </div>
     </nav>
@@ -192,23 +160,11 @@ function Navbar() {
 function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-16 pb-8 overflow-hidden">
-      {/* 案①: パーティクル背景 */}
-      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        {HERO_PARTICLES.map((p, i) => (
-          <span
-            key={i}
-            className="hero-particle"
-            style={{
-              left: `${p.x}%`,
-              top: `${p.y}%`,
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              animationDelay: `${p.delay}s`,
-              animationDuration: `${p.duration}s`,
-            }}
-          />
-        ))}
-      </div>
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+        style={{ backgroundImage: "url('/images/hero-bg.png')" }}
+        aria-hidden="true"
+      />
       <div className="absolute inset-0 bg-gradient-to-b from-[#060F1F]/50 via-transparent to-[#060F1F]" />
       <div className="absolute inset-0 hero-glow" />
 
@@ -280,7 +236,7 @@ function Hero() {
             className="group flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,195,255,0.3)]"
           >
             <Download size={20} />
-            Windows版をダウンロード
+            近日公開
             <ExternalLink
               size={16}
               className="opacity-50 group-hover:opacity-100 transition-opacity"
@@ -1008,7 +964,7 @@ function FinalCTA() {
           className="inline-flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-10 py-5 rounded-xl font-black text-xl hover:scale-105 transition-transform shadow-[0_0_40px_rgba(0,195,255,0.3)]"
         >
           <Download size={24} />
-          Windows版をダウンロード
+          近日公開
         </a>
 
         <p className="mt-6 text-xs text-white/30">
