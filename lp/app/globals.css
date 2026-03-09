@@ -19,6 +19,34 @@ body {
   );
 }
 
+/* ── Hero particles ── */
+@keyframes particle-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.35;
+  }
+  25% {
+    transform: translate(8px, -12px) scale(1.05);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-6px, -20px) scale(0.95);
+    opacity: 0.45;
+  }
+  75% {
+    transform: translate(10px, -8px) scale(1.02);
+    opacity: 0.55;
+  }
+}
+
+.hero-particle {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(0, 195, 255, 0.35);
+  animation: particle-float 14s ease-in-out infinite;
+}
+
 /* ── Text glow ── */
 .text-glow-cyan {
   text-shadow:
