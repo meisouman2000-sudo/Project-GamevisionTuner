@@ -1030,9 +1030,22 @@ function Footer() {
           <Monitor size={16} className="text-electric-cyan/40" />
           <span className="font-bold">GAMEVISION TUNER</span>
         </div>
-        <p className="text-xs text-white/20">
-          &copy; {new Date().getFullYear()} Catnap Studio. All rights reserved.
-        </p>
+        <div className="flex flex-col items-center md:items-end gap-2">
+          <div className="flex flex-wrap justify-center md:justify-end gap-4 text-[11px] text-white/40">
+            <a href="/privacy" className="hover:text-white/80 underline-offset-4 hover:underline">
+              プライバシーポリシー
+            </a>
+            <a href="/terms" className="hover:text-white/80 underline-offset-4 hover:underline">
+              利用規約
+            </a>
+            <a href="/tokusho" className="hover:text-white/80 underline-offset-4 hover:underline">
+              特定商取引法に基づく表記
+            </a>
+          </div>
+          <p className="text-xs text-white/20">
+            &copy; {new Date().getFullYear()} Catnap Studio. All rights reserved.
+          </p>
+        </div>
       </div>
     </footer>
   )
