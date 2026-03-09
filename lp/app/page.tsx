@@ -192,12 +192,7 @@ function Navbar() {
 function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-16 pb-8 overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-        style={{ backgroundImage: "url('/images/hero-bg.png')" }}
-        aria-hidden="true"
-      />
-      {/* 粒子がゆっくり動くオーバーレイ */}
+      {/* 粒子がゆっくり動くオーバーレイ（背景画像なし） */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         {HERO_PARTICLES.map((p, i) => (
           <span
