@@ -1,9 +1,19 @@
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
-import { Inter } from 'next/font/google'
+import { Orbitron, Noto_Sans_JP } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], display: 'swap' })
+const orbitron = Orbitron({
+  display: 'swap',
+  variable: '--font-orbitron',
+  weight: ['400', '600', '700', '900'],
+})
+
+const notoSansJP = Noto_Sans_JP({
+  display: 'swap',
+  variable: '--font-noto',
+  weight: ['400', '700', '900'],
+})
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -137,7 +147,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.className} bg-[#060F1F] text-white antialiased`}
+        className={`${orbitron.variable} ${notoSansJP.variable} font-noto bg-[#060F1F] text-white antialiased`}
       >
         {children}
       </body>

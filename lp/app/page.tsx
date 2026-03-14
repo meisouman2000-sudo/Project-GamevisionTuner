@@ -146,7 +146,7 @@ function Navbar() {
               strokeWidth={2.5}
             />
           </div>
-          <span className="font-black text-lg tracking-tight">
+          <span className="font-orbitron font-black text-lg tracking-tight">
             GAMEVISION <span className="text-electric-cyan">TUNER</span>
           </span>
         </div>
@@ -192,6 +192,10 @@ function Navbar() {
 function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-16 pb-8 overflow-hidden">
+      {/* Dot grid texture */}
+      <div className="absolute inset-0 dot-grid opacity-70" aria-hidden="true" />
+      {/* Scanning line */}
+      <div className="scan-line" aria-hidden="true" />
       {/* 粒子がゆっくり動くオーバーレイ（背景画像なし） */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
         {HERO_PARTICLES.map((p, i) => (
@@ -216,10 +220,11 @@ function Hero() {
         {/* 1行目: テキスト + 画像 */}
         <div className="w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-4 mb-10">
           {/* Left: Text */}
-          <div className="flex-1 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 bg-electric-cyan/10 border border-electric-cyan/20 rounded-full px-5 py-2 mb-8">
+          <div className="flex-1 text-center lg:text-left hud-corners p-2">
+            <div className="inline-flex items-center gap-2 bg-electric-cyan/10 border border-electric-cyan/20 rounded-sm px-5 py-2 mb-8 font-orbitron">
+              <span className="w-1.5 h-1.5 rounded-full bg-electric-cyan blink" />
               <Crosshair size={14} className="text-electric-cyan" />
-              <span className="text-xs font-bold text-electric-cyan tracking-wider uppercase">
+              <span className="text-xs font-bold text-electric-cyan tracking-widest uppercase">
                 NVIDIA Display Optimizer for FPS Gamers
               </span>
             </div>
@@ -543,7 +548,7 @@ function Features() {
           {features.map((feature, i) => (
             <div
               key={i}
-              className="scroll-fade-in card-glow bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 hover:border-electric-cyan/20 transition-all group"
+              className="scroll-fade-in card-glow card-angled bg-white/[0.03] border border-white/[0.06] p-6 hover:border-electric-cyan/20 transition-all group"
             >
               <div className="w-12 h-12 rounded-xl bg-electric-cyan/10 flex items-center justify-center mb-4 group-hover:bg-electric-cyan/20 transition-colors">
                 <feature.icon size={24} className="text-electric-cyan" />
@@ -614,12 +619,16 @@ function HowItWorks() {
               } items-center gap-8`}
             >
               {/* Text */}
-              <div className="flex-1 text-center md:text-left">
-                <div className="flex items-center gap-4 mb-4 justify-center md:justify-start">
-                  <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
+              <div className="flex-1 text-center md:text-left relative">
+                {/* Large background step number */}
+                <span className="absolute -top-4 left-0 text-[100px] font-orbitron font-black text-electric-cyan/[0.06] leading-none select-none pointer-events-none hidden md:block">
+                  {step.num}
+                </span>
+                <div className="relative flex items-center gap-4 mb-4 justify-center md:justify-start">
+                  <div className="relative inline-flex items-center justify-center w-14 h-14 bg-white/[0.04] border border-white/[0.08] card-angled">
                     <step.icon size={26} className="text-electric-cyan" />
-                    <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-juicy-green text-[#060F1F] text-xs font-black flex items-center justify-center">
-                      {step.num}
+                    <span className="absolute -top-2 -right-2 font-orbitron w-6 h-6 rounded-none bg-juicy-green text-[#060F1F] text-xs font-black flex items-center justify-center">
+                      {step.num.slice(-1)}
                     </span>
                   </div>
                   <h3 className="text-2xl font-bold">{step.title}</h3>
@@ -682,29 +691,35 @@ function GameShowcase() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {games.map((game) => (
+      </div>
+
+      {/* Full-width marquee */}
+      <div className="relative overflow-hidden mt-4">
+        {/* Left fade */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#060F1F] to-transparent z-10 pointer-events-none" />
+        {/* Right fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#060F1F] to-transparent z-10 pointer-events-none" />
+        <div className="flex gap-3 animate-ticker" style={{ width: 'max-content' }}>
+          {[...games, ...games].map((game, i) => (
             <div
-              key={game}
-              className="scroll-fade-in bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3.5 text-center hover:border-electric-cyan/30 hover:bg-electric-cyan/[0.04] transition-all group"
+              key={i}
+              className="shrink-0 bg-white/[0.03] border border-white/[0.06] rounded-sm px-4 py-3.5 flex items-center gap-2.5 hover:border-electric-cyan/30 hover:bg-electric-cyan/[0.04] transition-all group cursor-default"
             >
-              <div className="flex items-center justify-center gap-2.5">
-                <Crosshair
-                  size={14}
-                  className="text-electric-cyan/30 group-hover:text-electric-cyan/70 transition-colors shrink-0"
-                />
-                <span className="font-bold text-sm text-white/70 group-hover:text-white transition-colors">
-                  {game}
-                </span>
-              </div>
+              <Crosshair
+                size={14}
+                className="text-electric-cyan/30 group-hover:text-electric-cyan/70 transition-colors"
+              />
+              <span className="font-bold text-sm text-white/70 group-hover:text-white transition-colors whitespace-nowrap">
+                {game}
+              </span>
             </div>
           ))}
         </div>
-
-        <p className="text-center text-white/30 text-sm mt-8 scroll-fade-in">
-          …その他、Steamで配信されている<strong>全タイトル</strong>に対応
-        </p>
       </div>
+
+      <p className="text-center text-white/30 text-sm mt-8 scroll-fade-in px-6">
+        …その他、Steamで配信されている<strong>全タイトル</strong>に対応
+      </p>
     </section>
   )
 }

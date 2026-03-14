@@ -16,7 +16,9 @@ const config: Config = {
         'electric-cyan': '#00C3FF',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-noto)', 'Noto Sans JP', 'system-ui', 'sans-serif'],
+        noto: ['var(--font-noto)', 'Noto Sans JP', 'system-ui', 'sans-serif'],
+        orbitron: ['var(--font-orbitron)', 'sans-serif'],
       },
       animation: {
         'glow-pulse': 'glow-pulse 3s ease-in-out infinite',
