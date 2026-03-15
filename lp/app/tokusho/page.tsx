@@ -36,7 +36,7 @@ export default function TokushoPage() {
                   販売業者
                 </th>
                 <td className="py-3 text-white/80">
-                  （ここに氏名または屋号を記載してください）
+                  峯岸宏輔（Catnap Studio）
                 </td>
               </tr>
               <tr className="border-b border-white/10">
@@ -44,7 +44,7 @@ export default function TokushoPage() {
                   運営責任者
                 </th>
                 <td className="py-3 text-white/80">
-                  （ここに氏名を記載してください）
+                  峯岸宏輔
                 </td>
               </tr>
               <tr className="border-b border-white/10">
@@ -52,7 +52,15 @@ export default function TokushoPage() {
                   所在地
                 </th>
                 <td className="py-3 text-white/80">
-                  （ここに住所を記載してください）
+                  請求があり次第、遅滞なく開示します
+                </td>
+              </tr>
+              <tr className="border-b border-white/10">
+                <th className="text-left py-3 pr-4 font-bold text-white/70 align-top">
+                  電話番号
+                </th>
+                <td className="py-3 text-white/80">
+                  請求があり次第、遅滞なく開示します
                 </td>
               </tr>
               <tr className="border-b border-white/10">
@@ -60,7 +68,13 @@ export default function TokushoPage() {
                   連絡先
                 </th>
                 <td className="py-3 text-white/80">
-                  メールアドレス： （ここに連絡先メールアドレスを記載してください）
+                  メールアドレス：{' '}
+                  <a
+                    href="mailto:catnapstudio.support@gmail.com"
+                    className="underline underline-offset-2 hover:text-white transition-colors"
+                  >
+                    catnapstudio.support@gmail.com
+                  </a>
                 </td>
               </tr>
               <tr className="border-b border-white/10">

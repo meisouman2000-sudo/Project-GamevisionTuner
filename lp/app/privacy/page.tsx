@@ -95,7 +95,16 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-bold mb-2">7. お問い合わせ窓口</h2>
             <p>
-              本ポリシーおよび個人情報の取扱いに関するお問い合わせは、別途案内するサポート窓口（メールアドレス等）までご連絡ください。
+              本ポリシーおよび個人情報の取扱いに関するお問い合わせは、下記サポート窓口までご連絡ください。
+            </p>
+            <p className="mt-2">
+              メールアドレス：{' '}
+              <a
+                href="mailto:catnapstudio.support@gmail.com"
+                className="underline underline-offset-2 hover:text-white transition-colors"
+              >
+                catnapstudio.support@gmail.com
+              </a>
             </p>
           </section>
         </section>
