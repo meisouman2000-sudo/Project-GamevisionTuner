@@ -22,7 +22,7 @@ serve(async (req) => {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
+    event = await stripe.webhooks.constructEventAsync(body, signature, STRIPE_WEBHOOK_SECRET);
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message);
     return new Response(`Webhook Error: ${err.message}`, { status: 400 });
@@ -42,19 +42,23 @@ serve(async (req) => {
           const userId = subscription.metadata.supabase_user_id;
 
           if (userId) {
-            await supabaseAdmin
+            const { error: upsertError } = await supabaseAdmin
               .from('subscriptions')
-              .update({
+              .upsert({
+                user_id: userId,
                 stripe_customer_id: customerId,
                 stripe_subscription_id: subscriptionId,
                 status: 'active',
                 plan: 'pro',
                 current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
                 updated_at: new Date().toISOString(),
-              })
-              .eq('user_id', userId);
+              }, { onConflict: 'user_id' });
 
-            console.log(`[Webhook] Activated Pro for user ${userId}`);
+            if (upsertError) {
+              console.error(`[Webhook] DB upsert failed for user ${userId}:`, upsertError);
+            } else {
+              console.log(`[Webhook] Activated Pro for user ${userId}`);
+            }
           }
         }
         break;

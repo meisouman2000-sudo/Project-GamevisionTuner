@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Play, Settings, X, Gamepad2, RotateCcw } from 'lucide-react';
+import { Play, Settings, X, Gamepad2, RotateCcw, Lock } from 'lucide-react';
 import { useT } from '../i18n-context';
 
 interface GameCardProps {
@@ -7,6 +7,7 @@ interface GameCardProps {
     title: string;
     profileName?: string;
     isLaunching?: boolean;
+    locked?: boolean;
     onPlay: () => void;
     onSettings: () => void;
     onRemove?: () => void;
@@ -34,7 +35,7 @@ function getAccent(appId: string) {
     return ACCENTS[Math.abs(hash) % ACCENTS.length];
 }
 
-export function GameCard({ id, title, profileName, isLaunching, onPlay, onSettings, onRemove, onResetToDefault }: GameCardProps) {
+export function GameCard({ id, title, profileName, isLaunching, locked, onPlay, onSettings, onRemove, onResetToDefault }: GameCardProps) {
     const t = useT();
     const accent = getAccent(id);
 
@@ -43,8 +44,17 @@ export function GameCard({ id, title, profileName, isLaunching, onPlay, onSettin
             layout
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`group relative bg-gradient-to-r ${accent.bg} backdrop-blur-sm rounded-2xl border border-white/[0.06] ${accent.border} transition-all duration-200 hover:shadow-lg hover:shadow-black/20`}
+            className={`group relative bg-gradient-to-r ${accent.bg} backdrop-blur-sm rounded-2xl border transition-all duration-200
+                ${locked
+                    ? 'border-white/[0.04] opacity-50'
+                    : `border-white/[0.06] ${accent.border} hover:shadow-lg hover:shadow-black/20`
+                }`}
         >
+            {locked && (
+                <div className="absolute inset-0 rounded-2xl flex items-center justify-end pr-5 pointer-events-none z-10">
+                    <Lock size={16} className="text-white/30" />
+                </div>
+            )}
             <div className="flex items-center gap-4 px-5 py-3.5">
                 {/* Icon */}
                 <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center shrink-0 border border-white/[0.06]">
@@ -62,11 +72,11 @@ export function GameCard({ id, title, profileName, isLaunching, onPlay, onSettin
                 {/* Actions */}
                 <div className="flex items-center gap-2 shrink-0">
                     <motion.button
-                        whileTap={{ scale: 0.93 }}
-                        onClick={onPlay}
-                        disabled={isLaunching}
+                        whileTap={locked ? undefined : { scale: 0.93 }}
+                        onClick={locked ? undefined : onPlay}
+                        disabled={isLaunching || locked}
                         className={`font-black px-5 py-2 rounded-xl text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all
-                          ${isLaunching
+                          ${isLaunching || locked
                                 ? 'bg-white/5 text-white/30 cursor-not-allowed'
                                 : 'bg-juicy-green hover:bg-[#4ab802] text-deep-navy shadow-[0_3px_0_#2d6a01] active:shadow-none active:translate-y-[3px]'
                             }`}
@@ -79,9 +89,14 @@ export function GameCard({ id, title, profileName, isLaunching, onPlay, onSettin
                     </motion.button>
 
                     <motion.button
-                        whileTap={{ scale: 0.90 }}
-                        onClick={onSettings}
-                        className="w-9 h-9 flex items-center justify-center bg-white/[0.04] text-electric-cyan/70 rounded-xl hover:bg-white/[0.08] hover:text-electric-cyan transition-all border border-white/[0.06]"
+                        whileTap={locked ? undefined : { scale: 0.90 }}
+                        onClick={locked ? undefined : onSettings}
+                        disabled={locked}
+                        className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all border border-white/[0.06]
+                            ${locked
+                                ? 'bg-white/[0.02] text-white/20 cursor-not-allowed'
+                                : 'bg-white/[0.04] text-electric-cyan/70 hover:bg-white/[0.08] hover:text-electric-cyan'
+                            }`}
                     >
                         <Settings size={17} />
                     </motion.button>

@@ -1,0 +1,15 @@
+# Supabase プロジェクト設定
+# https://supabase.com/docs/guides/functions/deploy#deploying-functions
+
+[functions.create-checkout]
+# Gateway レベルの JWT 検証を無効化。
+# 認証は Function コード内の supabaseAdmin.auth.getUser() で一元管理する。
+verify_jwt = false
+
+[functions.create-portal]
+# 同上
+verify_jwt = false
+
+[functions.stripe-webhook]
+# Webhook は Stripe の署名で検証するため JWT 不要
+verify_jwt = false
