@@ -38,12 +38,19 @@ serve(async (req) => {
 
     const { priceId } = await req.json();
 
-    // 既存の Stripe Customer を探す or 作成
+    // 既存サブスクを確認（アクティブなら二重課金を防ぐ）
     const { data: sub } = await supabaseAdmin
       .from('subscriptions')
-      .select('stripe_customer_id')
+      .select('stripe_customer_id, status, plan')
       .eq('user_id', user.id)
       .single();
+
+    if (sub?.status === 'active' && sub?.plan === 'pro') {
+      return new Response(JSON.stringify({ error: 'already_subscribed' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     let customerId = sub?.stripe_customer_id;
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react'
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GameCard } from './components/GameCard'
 import { SettingsModal } from './components/SettingsModal'
@@ -42,12 +42,37 @@ function AppContent() {
   const { language, setLanguage } = useLanguage();
   const t = useT();
 
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const loadAuthState = useCallback(async () => {
     if (!window.gameVisionAPI?.getAuthState) return;
     const state = await window.gameVisionAPI.getAuthState();
     setAuthState(state);
     const limit = await window.gameVisionAPI.getGameLimit(state.subscription.plan);
     setGameLimit(limit === Infinity ? Infinity : (limit as number));
+    return state;
+  }, []);
+
+  // 決済完了後、Webhook で DB が更新されるまで定期的にサブスク状態を再取得する
+  const startPollingForProPlan = useCallback(() => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    let attempts = 0;
+    const maxAttempts = 24; // 5秒 × 24回 = 最大2分間ポーリング
+    pollingRef.current = setInterval(async () => {
+      attempts++;
+      const state = await loadAuthState();
+      if (state?.subscription.plan === 'pro' || attempts >= maxAttempts) {
+        clearInterval(pollingRef.current!);
+        pollingRef.current = null;
+      }
+    }, 5000);
+  }, [loadAuthState]);
+
+  // アンマウント時にポーリングを確実に止める
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
   }, []);
 
   const refreshSavedProfiles = useCallback(async (games: Game[]) => {
@@ -248,8 +273,13 @@ function AppContent() {
 
   const handleCheckout = useCallback(async (interval: 'month' | 'year') => {
     if (!window.gameVisionAPI?.createCheckoutSession) return { url: null, error: 'API not available' };
-    return window.gameVisionAPI.createCheckoutSession(interval);
-  }, []);
+    const result = await window.gameVisionAPI.createCheckoutSession(interval);
+    if (result.url) {
+      // 決済画面を開いた後、Pro 反映を検知するまでポーリング開始
+      startPollingForProPlan();
+    }
+    return result;
+  }, [startPollingForProPlan]);
 
   const handleManageSubscription = useCallback(async () => {
     if (!window.gameVisionAPI?.createPortalSession) return { url: null, error: 'API not available' };
@@ -354,12 +384,13 @@ function AppContent() {
                 </div>
               )}
 
-              {displayedGames.map((game) => (
+              {displayedGames.map((game, index) => (
                 <GameCard
                   key={game.id}
                   {...game}
                   profileName={savedProfileIds.has(game.id) ? t('profileConfigured') : undefined}
                   isLaunching={launchingGameId === game.id}
+                  locked={authState.subscription.plan !== 'pro' && index >= gameLimit}
                   onPlay={() => handlePlay(game.id)}
                   onSettings={() => handleSettings(game.id)}
                   onRemove={() => handleRemoveGame(game.id)}
@@ -487,7 +518,7 @@ function AppContent() {
           onCheckout={handleCheckout}
           onManage={handleManageSubscription}
           onOpenUrl={handleOpenUrl}
-          onRefreshAuth={loadAuthState}
+          onRefreshAuth={() => loadAuthState().then(() => {})}
         />
 
         {/* Upgrade Prompt */}

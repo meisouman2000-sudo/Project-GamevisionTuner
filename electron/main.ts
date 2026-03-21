@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { execFile } from 'node:child_process'
 import Store from 'electron-store'
+import { autoUpdater } from 'electron-updater'
 import { scanSteamGames } from './steam'
 import {
   getAuthState,
@@ -504,4 +505,9 @@ app.whenReady().then(async () => {
   createWindow();
   startGlobalGameMonitor();
   startLibraryScanner();
+
+  // 自動アップデート（パッケージ済みビルドのみ）
+  if (app.isPackaged) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
 })

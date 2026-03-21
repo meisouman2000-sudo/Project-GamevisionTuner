@@ -1,4 +1,4 @@
-import {
+﻿import {
   Monitor,
   Sliders,
   Download,
@@ -385,98 +385,6 @@ function PainPoints() {
 }
 
 /* ─────────────────────────────────────────────
-   App Showcase (Discord-style alternating layout)
-   ───────────────────────────────────────────── */
-function AppShowcase() {
-  const showcases = [
-    {
-      badge: 'GAME LIBRARY',
-      title: 'Steamライブラリから\nゲームを自動検出',
-      description:
-        'インストール済みのSteamゲームを自動でスキャン。お気に入りのFPSタイトルをワンクリックで追加するだけ。面倒なパス設定やID入力は一切不要です。',
-      image: '/images/showcase-library.png',
-      imageAlt: 'ゲームライブラリ一覧画面 — Steamから自動検出されたゲームをワンクリックで追加',
-      icon: Gamepad2,
-      iconColor: 'text-electric-cyan',
-      reverse: false,
-    },
-    {
-      badge: 'SETTINGS',
-      title: '直感的なスライダーで\n完璧な設定を',
-      description:
-        '明るさ・コントラスト・ガンマ・デジタルバイブランスを直感的に調整。プレビュー機能でリアルタイムに画面を確認しながら、あなただけの最強プロファイルを作成。',
-      image: '/images/showcase-settings-real.png',
-      imageAlt: 'GameVision Tuner 設定画面 — スライダーでディスプレイ設定を調整しプロファイル保存',
-      icon: Sliders,
-      iconColor: 'text-juicy-green',
-      reverse: true,
-    },
-    {
-      badge: 'AUTO SWITCH',
-      title: '起動から終了まで\nすべて自動',
-      description:
-        'ゲームの起動を自動検知し、保存済みプロファイルを瞬時に適用。終了後はあなたの元のデスクトップ設定に完璧復元。一度設定したら、あとは忘れてOK。',
-      image: '/images/showcase-monitor.png',
-      imageAlt: 'Before/After 比較 — デジタルバイブランス適用前後の視認性の変化',
-      icon: RefreshCw,
-      iconColor: 'text-electric-cyan',
-      reverse: false,
-    },
-  ]
-
-  return (
-    <section className="py-16 px-6">
-      <div className="max-w-6xl mx-auto space-y-24">
-        {showcases.map((item, i) => (
-          <div
-            key={i}
-            className={`scroll-fade-in flex flex-col ${
-              item.reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'
-            } items-center gap-10 lg:gap-16`}
-          >
-            {/* Text side */}
-            <div className="flex-1 text-center lg:text-left">
-              <div
-                className={`inline-flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-1.5 mb-5`}
-              >
-                <item.icon size={14} className={item.iconColor} />
-                <span className="text-xs font-bold text-white/50 tracking-wider">
-                  {item.badge}
-                </span>
-              </div>
-              <h3 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight mb-5 whitespace-pre-line">
-                {item.title}
-              </h3>
-              <p className="text-white/50 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                {item.description}
-              </p>
-            </div>
-
-            {/* Image side */}
-            <div className="flex-1 w-full">
-              <div className="relative">
-                <div
-                  className="absolute -inset-4 bg-electric-cyan/[0.04] blur-2xl rounded-3xl pointer-events-none"
-                  aria-hidden="true"
-                />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={item.image}
-                  alt={item.imageAlt}
-                  width={600}
-                  height={340}
-                  className="relative w-full rounded-2xl border border-white/10 shadow-2xl shadow-black/40"
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-/* ─────────────────────────────────────────────
    Features
    ───────────────────────────────────────────── */
 function Features() {
@@ -566,33 +474,36 @@ function Features() {
 }
 
 /* ─────────────────────────────────────────────
-   How It Works
+   How It Works（使い方 3ステップ）
    ───────────────────────────────────────────── */
 function HowItWorks() {
   const steps = [
     {
       num: '01',
-      title: 'ゲームを登録',
+      badge: 'GAME LIBRARY',
+      title: 'ゲームを登録するだけ。\nあとはすべて自動。',
       description:
-        'Steamライブラリから自動検出されたゲームの中から、設定を最適化したいタイトルを選んで追加します。',
+        'インストール済みのSteamゲームを自動でスキャン。お気に入りのFPSタイトルをワンクリックで追加するだけ。面倒なパス設定やID入力は一切不要です。',
       icon: Gamepad2,
       image: '/images/step-add-game.png',
       imageAlt: 'ゲームライブラリからタイトルを選んで追加する画面',
     },
     {
       num: '02',
-      title: '設定を調整',
+      badge: 'SETTINGS',
+      title: '直感的なスライダーで\n完璧な設定を保存。',
       description:
-        '直感的なスライダーで明るさ・コントラスト・ガンマ・デジタルバイブランスをお好みに調整して保存。',
+        '明るさ・コントラスト・ガンマ・デジタルバイブランスを直感的に調整。リアルタイムにプレビューしながら、あなただけの最強プロファイルを作成して保存します。',
       icon: Sliders,
       image: '/images/step-adjust.png',
       imageAlt: 'ディスプレイ設定スライダーを操作してプロファイルを保存する画面',
     },
     {
       num: '03',
-      title: 'あとは全自動',
+      badge: 'AUTO SWITCH',
+      title: '起動で自動適用、\n終了で自動復元。',
       description:
-        'ゲーム起動で設定を自動適用、終了で自動復元。あなたはゲームに集中するだけ。',
+        'ゲームの起動を自動検知し、保存済みプロファイルを瞬時に適用。終了後はあなたの元のデスクトップ設定に完璧復元。一度設定したら、あとは忘れてOK。',
       icon: Zap,
       image: '/images/step-auto.png',
       imageAlt: 'ゲーム起動→設定適用→終了→復元の自動フロー図',
@@ -602,7 +513,7 @@ function HowItWorks() {
   return (
     <section id="how-it-works" className="py-24 px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16 scroll-fade-in">
+        <div className="text-center mb-20 scroll-fade-in">
           <h2 className="text-3xl md:text-4xl font-black mb-4">
             使い方は、
             <span className="text-juicy-green">たったの3ステップ</span>
@@ -610,44 +521,47 @@ function HowItWorks() {
           <p className="text-white/50">シンプルだから、すぐ使える</p>
         </div>
 
-        <div className="space-y-12">
+        <div className="space-y-24">
           {steps.map((step, i) => (
             <div
               key={i}
               className={`scroll-fade-in flex flex-col ${
-                i % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'
-              } items-center gap-8`}
+                i % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'
+              } items-center gap-10 lg:gap-16`}
             >
               {/* Text */}
-              <div className="flex-1 text-center md:text-left relative">
-                {/* Large background step number */}
-                <span className="absolute -top-4 left-0 text-[100px] font-orbitron font-black text-electric-cyan/[0.06] leading-none select-none pointer-events-none hidden md:block">
+              <div className="flex-1 text-center lg:text-left relative">
+                <span className="absolute -top-6 left-0 text-[120px] font-orbitron font-black text-electric-cyan/[0.05] leading-none select-none pointer-events-none hidden lg:block">
                   {step.num}
                 </span>
-                <div className="relative flex items-center gap-4 mb-4 justify-center md:justify-start">
-                  <div className="relative inline-flex items-center justify-center w-14 h-14 bg-white/[0.04] border border-white/[0.08] card-angled">
-                    <step.icon size={26} className="text-electric-cyan" />
-                    <span className="absolute -top-2 -right-2 font-orbitron w-6 h-6 rounded-none bg-juicy-green text-[#060F1F] text-xs font-black flex items-center justify-center">
-                      {step.num.slice(-1)}
+                <div className="relative">
+                  <div className="flex items-center gap-3 mb-5 justify-center lg:justify-start">
+                    <div className="relative inline-flex items-center justify-center w-12 h-12 bg-white/[0.04] border border-white/[0.08] card-angled shrink-0">
+                      <step.icon size={22} className="text-electric-cyan" />
+                      <span className="absolute -top-2 -right-2 font-orbitron w-5 h-5 rounded-none bg-juicy-green text-[#060F1F] text-[10px] font-black flex items-center justify-center">
+                        {step.num.slice(-1)}
+                      </span>
+                    </div>
+                    <span className="text-xs font-bold text-white/30 tracking-widest">
+                      {step.badge}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-bold">{step.title}</h3>
+                  <h3 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight mb-5 whitespace-pre-line">
+                    {step.title}
+                  </h3>
+                  <p className="text-white/50 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                    {step.description}
+                  </p>
                 </div>
-                <p className="text-white/50 leading-relaxed max-w-md mx-auto md:mx-0">
-                  {step.description}
-                </p>
               </div>
 
               {/* Image */}
               <div className="flex-1 w-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={step.image}
-                  alt={step.imageAlt}
-                  width={600}
-                  height={340}
-                  className="w-full rounded-2xl border border-white/[0.08] shadow-xl shadow-black/30"
-                />
+                <div className="relative">
+                  <div className="absolute -inset-4 bg-electric-cyan/[0.04] blur-2xl rounded-3xl pointer-events-none" aria-hidden="true" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={step.image} alt={step.imageAlt} width={600} height={340} className="relative w-full rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/40" />
+                </div>
               </div>
             </div>
           ))}
@@ -656,13 +570,11 @@ function HowItWorks() {
     </section>
   )
 }
-
 /* ─────────────────────────────────────────────
    Game Showcase
    ───────────────────────────────────────────── */
 function GameShowcase() {
   const games = [
-    'Valorant',
     'Counter-Strike 2',
     'Apex Legends',
     'Fortnite',
@@ -674,6 +586,7 @@ function GameShowcase() {
     'Destiny 2',
     'Team Fortress 2',
     'Battlefield 2042',
+    'Rust',
   ]
 
   return (
@@ -814,12 +727,9 @@ function Pricing() {
                 Pro
               </h3>
               <div className="flex items-end gap-1">
-                <span className="text-4xl font-black">¥—</span>
+                <span className="text-4xl font-black">¥300</span>
                 <span className="text-white/30 text-sm mb-1">/ 月</span>
               </div>
-              <p className="text-xs text-white/30 mt-1">
-                ※ 価格は近日公開
-              </p>
             </div>
 
             <div className="mb-8 pb-6 border-b border-electric-cyan/10">
@@ -870,83 +780,10 @@ function Pricing() {
             </a>
           </div>
         </div>
-      </div>
-    </section>
-  )
-}
 
-/* ─────────────────────────────────────────────
-   System Requirements
-   ───────────────────────────────────────────── */
-function SystemRequirements() {
-  return (
-    <section className="py-24 px-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12 scroll-fade-in">
-          <h2 className="text-3xl md:text-4xl font-black mb-4">動作環境</h2>
-        </div>
-
-        <div className="scroll-fade-in grid md:grid-cols-2 gap-6">
-          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
-            <h3 className="font-bold text-white/80 mb-4 flex items-center gap-2">
-              <Monitor size={18} className="text-white/40" />
-              最小要件
-            </h3>
-            <ul className="space-y-2.5 text-sm text-white/50">
-              <li>
-                <span className="text-white/70 font-bold">OS：</span>Windows 10
-                (64bit)
-              </li>
-              <li>
-                <span className="text-white/70 font-bold">CPU：</span>1 GHz 以上
-              </li>
-              <li>
-                <span className="text-white/70 font-bold">RAM：</span>4 GB
-              </li>
-              <li>
-                <span className="text-white/70 font-bold">GPU：</span>NVIDIA
-                GeForce シリーズ{' '}
-                <span className="text-panic-pink font-bold">（必須）</span>
-              </li>
-              <li>
-                <span className="text-white/70 font-bold">ストレージ：</span>200
-                MB
-              </li>
-              <li>
-                <span className="text-white/70 font-bold">その他：</span>Steam
-                クライアント
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-electric-cyan/[0.04] border border-electric-cyan/10 rounded-2xl p-6">
-            <h3 className="font-bold text-electric-cyan mb-4 flex items-center gap-2">
-              <Sparkles size={18} />
-              推奨スペック
-            </h3>
-            <ul className="space-y-2.5 text-sm text-white/50">
-              <li>
-                <span className="text-white/70 font-bold">OS：</span>Windows 11
-                (64bit)
-              </li>
-              <li>
-                <span className="text-white/70 font-bold">GPU：</span>NVIDIA
-                GeForce GTX 1060 以上
-              </li>
-              <li>
-                <span className="text-white/70 font-bold">ストレージ：</span>200
-                MB
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="scroll-fade-in mt-6 bg-panic-pink/[0.06] border border-panic-pink/10 rounded-xl p-4 text-center">
-          <p className="text-sm text-panic-pink/80">
-            <strong>NVIDIA GPU 専用ツールです。</strong> AMD / Intel GPU
-            には対応していません。
-          </p>
-        </div>
+        <p className="text-center text-xs text-white/30 mt-8 scroll-fade-in">
+          ※ NVIDIA GPU 専用ツールです。AMD / Intel GPU には対応していません。
+        </p>
       </div>
     </section>
   )
@@ -1080,12 +917,10 @@ export default function LandingPage() {
       <main>
         <Hero />
         <PainPoints />
-        <AppShowcase />
         <Features />
         <HowItWorks />
         <GameShowcase />
         <Pricing />
-        <SystemRequirements />
         <FAQ />
         <FinalCTA />
       </main>

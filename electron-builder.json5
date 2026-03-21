@@ -52,5 +52,10 @@
       "AppImage"
     ],
     "artifactName": "${productName}-Linux-${version}.${ext}"
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "meisouman2000-sudo",
+    "repo": "Project-GamevisionTuner"
   }
 }

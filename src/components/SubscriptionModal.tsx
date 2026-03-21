@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Crown, CheckCircle, AlertCircle, X, Sparkles, ExternalLink, LogOut, Check } from 'lucide-react';
+import { Crown, CheckCircle, AlertCircle, X, Sparkles, ExternalLink, LogOut, Check, LogIn } from 'lucide-react';
 import { useT } from '../i18n-context';
 
 interface SubscriptionModalProps {
@@ -75,8 +75,11 @@ export function SubscriptionModal({
     if (result.url) {
       onOpenUrl(result.url);
       onClose();
+    } else if (result.error === 'already_subscribed') {
+      // すでにProの場合はUIを最新状態に更新してエラーは出さない
+      await onRefreshAuth();
     } else {
-      setError(t('sub_comingSoon'));
+      setError(result.error || t('sub_comingSoon'));
     }
     setCheckingOut(false);
   };
@@ -87,7 +90,7 @@ export function SubscriptionModal({
     if (result.url) {
       onOpenUrl(result.url);
     } else if (result.error) {
-      setError(t('sub_comingSoon'));
+      setError(result.error || t('sub_comingSoon'));
     }
   };
 
@@ -243,8 +246,47 @@ export function SubscriptionModal({
                       )}
                     </motion.button>
 
+                    {/* みなし同意テキスト */}
+                    <p className="text-[10px] text-white/30 text-center leading-relaxed">
+                      「購読する」を押すことで、
+                      <button
+                        onClick={() => onOpenUrl('https://project-gamevision-tuner.vercel.app/terms')}
+                        className="underline hover:text-white/50 transition-colors"
+                      >利用規約</button>
+                      および
+                      <button
+                        onClick={() => onOpenUrl('https://project-gamevision-tuner.vercel.app/privacy')}
+                        className="underline hover:text-white/50 transition-colors"
+                      >プライバシーポリシー</button>
+                      に同意したものとみなします
+                    </p>
+
                     {!authState.loggedIn && (
-                      <p className="text-[10px] text-white/20 text-center">{t('sub_authRequiredDesc')}</p>
+                      <>
+                        <p className="text-[10px] text-white/20 text-center">{t('sub_authRequiredDesc')}</p>
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 h-px bg-white/[0.06]" />
+                          <span className="text-[10px] text-white/20">{t('sub_orSignInOnly')}</span>
+                          <div className="flex-1 h-px bg-white/[0.06]" />
+                        </div>
+                        <motion.button
+                          whileHover={{ scale: 1.01 }}
+                          whileTap={{ scale: 0.99 }}
+                          onClick={handleSignIn}
+                          disabled={signingIn || checkingOut}
+                          className={`w-full py-2.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2
+                            ${signingIn || checkingOut
+                              ? 'bg-white/5 text-white/20 cursor-not-allowed'
+                              : 'bg-white/[0.04] text-white/60 hover:bg-white/[0.08] hover:text-white/80 border border-white/[0.08]'
+                            }`}
+                        >
+                          {signingIn ? (
+                            <><Spinner /> {t('sub_signingIn')}</>
+                          ) : (
+                            <><LogIn size={14} /> {t('sub_signInOnly')}</>
+                          )}
+                        </motion.button>
+                      </>
                     )}
                   </div>
                 )}

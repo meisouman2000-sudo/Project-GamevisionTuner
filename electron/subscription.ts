@@ -2,7 +2,6 @@ import { BrowserWindow } from 'electron';
 import { getSupabase } from './supabase';
 import {
   AUTH_CALLBACK_URL,
-  SUPABASE_URL,
   STRIPE_MONTHLY_PRICE_ID,
   STRIPE_YEARLY_PRICE_ID,
 } from './config';
@@ -68,6 +67,9 @@ export async function signInWithGoogle(): Promise<{ success: boolean; error?: st
     options: {
       redirectTo: AUTH_CALLBACK_URL,
       skipBrowserRedirect: true,
+      queryParams: {
+        prompt: 'select_account',
+      },
     },
   });
 
@@ -111,22 +113,32 @@ export async function createCheckoutSession(
   interval: 'month' | 'year'
 ): Promise<{ url: string | null; error?: string }> {
   const supabase = getSupabase();
-  const { data: { session } } = await supabase.auth.getSession();
 
-  if (!session) {
+  // getUser() でサーバー側検証を通し、有効なセッションのみ使う
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
     return { url: null, error: 'Not logged in' };
+  }
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    return { url: null, error: 'Session not found' };
   }
 
   const priceId = interval === 'month'
     ? STRIPE_MONTHLY_PRICE_ID
     : STRIPE_YEARLY_PRICE_ID;
 
+  supabase.functions.setAuth(session.access_token);
+
   const { data, error } = await supabase.functions.invoke('create-checkout', {
     body: { priceId },
   });
 
   if (error) {
-    return { url: null, error: error.message };
+    const status = (error as any).context?.status;
+    const body = await (error as any).context?.text?.().catch(() => '');
+    return { url: null, error: `status:${status} body:${body} msg:${error.message}` };
   }
 
   return { url: data?.url ?? null };
@@ -134,18 +146,28 @@ export async function createCheckoutSession(
 
 export async function createPortalSession(): Promise<{ url: string | null; error?: string }> {
   const supabase = getSupabase();
-  const { data: { session } } = await supabase.auth.getSession();
 
-  if (!session) {
+  // getUser() でサーバー側検証を通し、有効なセッションのみ使う
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
     return { url: null, error: 'Not logged in' };
   }
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    return { url: null, error: 'Session not found' };
+  }
+
+  supabase.functions.setAuth(session.access_token);
 
   const { data, error } = await supabase.functions.invoke('create-portal', {
     body: {},
   });
 
   if (error) {
-    return { url: null, error: error.message };
+    const status = (error as any).context?.status;
+    const body = await (error as any).context?.text?.().catch(() => '');
+    return { url: null, error: `status:${status} body:${body} msg:${error.message}` };
   }
 
   return { url: data?.url ?? null };
