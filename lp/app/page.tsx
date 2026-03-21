@@ -127,6 +127,82 @@ function ImagePlaceholder({
 }
 
 /* ─────────────────────────────────────────────
+   Hero Video Frame（Discord風アプリウィンドウ）
+   ───────────────────────────────────────────── */
+function HeroVideoFrame() {
+  return (
+    <div className="relative w-full">
+      {/* 外側グロー */}
+      <div
+        className="absolute -inset-6 rounded-3xl pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse at center, rgba(0,195,255,0.08) 0%, transparent 70%)',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* ウィンドウフレーム本体 */}
+      <div className="relative rounded-xl overflow-hidden border border-white/[0.10] shadow-[0_32px_80px_rgba(0,0,0,0.6)] bg-[#0b1a2e]">
+
+        {/* タイトルバー */}
+        <div className="flex items-center gap-0 px-4 py-3 bg-[#0d1f38] border-b border-white/[0.06]">
+          {/* macOS風ウィンドウボタン */}
+          <div className="flex items-center gap-1.5 mr-4">
+            <span className="w-3 h-3 rounded-full bg-[#ff5f57]/80" />
+            <span className="w-3 h-3 rounded-full bg-[#febc2e]/80" />
+            <span className="w-3 h-3 rounded-full bg-[#28c840]/80" />
+          </div>
+
+          {/* アプリ名（中央） */}
+          <div className="flex-1 flex items-center justify-center gap-2">
+            <Monitor size={12} className="text-electric-cyan/50" />
+            <span className="text-[11px] font-bold text-white/30 tracking-widest font-orbitron uppercase">
+              GameVision Tuner
+            </span>
+          </div>
+
+          {/* ステータスインジケーター */}
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-juicy-green blink" />
+            <span className="text-[10px] font-bold text-juicy-green/60 tracking-wider">
+              ACTIVE
+            </span>
+          </div>
+        </div>
+
+        {/* 動画エリア */}
+        <div className="relative aspect-video bg-black">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src="/videos/vibrance-demo.webm" type="video/webm" />
+            <source src="/videos/vibrance-demo.mp4" type="video/mp4" />
+          </video>
+        </div>
+
+        {/* ステータスバー */}
+        <div className="flex items-center justify-between px-4 py-2 bg-[#0d1f38] border-t border-white/[0.06]">
+          <div className="flex items-center gap-4 text-[10px] text-white/20">
+            <span className="text-electric-cyan/50">Digital Vibrance: 100%</span>
+            <span className="text-white/10">|</span>
+            <span>Profile: Auto-Applied</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-[10px] text-juicy-green/50">
+            <Zap size={10} />
+            <span>Auto-Applied</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────────
    Navbar
    ───────────────────────────────────────────── */
 function Navbar() {
@@ -179,7 +255,7 @@ function Navbar() {
           className="bg-electric-cyan text-[#060F1F] px-5 py-2 rounded-lg font-bold text-sm hover:bg-electric-cyan/90 transition-colors flex items-center gap-2"
         >
           <Download size={14} />
-          近日公開
+          無料ダウンロード
         </a>
       </div>
     </nav>
@@ -191,7 +267,7 @@ function Navbar() {
    ───────────────────────────────────────────── */
 function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center pt-16 pb-8 overflow-hidden">
+    <section className="relative min-h-screen flex items-center pt-16 pb-24 overflow-hidden">
       {/* Dot grid texture */}
       <div className="absolute inset-0 dot-grid opacity-70" aria-hidden="true" />
       {/* Scanning line */}
@@ -216,12 +292,12 @@ function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-[#060F1F]/50 via-transparent to-[#060F1F]" />
       <div className="absolute inset-0 hero-glow" />
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col items-center">
-        {/* 1行目: テキスト + 画像 */}
-        <div className="w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-4 mb-10">
-          {/* Left: Text */}
-          <div className="flex-1 text-center lg:text-left hud-corners p-2">
-            <div className="inline-flex items-center gap-2 bg-electric-cyan/10 border border-electric-cyan/20 rounded-sm px-5 py-2 mb-8 font-orbitron">
+      <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 lg:px-20">
+        <div className="w-full flex flex-col lg:flex-row items-center gap-10 lg:gap-24 xl:gap-28">
+          {/* Left: Text — 画面幅に比例して伸縮（40%） */}
+          <div className="w-full lg:flex-[2] text-center lg:text-left hud-corners p-4">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-electric-cyan/10 border border-electric-cyan/20 rounded-sm px-5 py-2 mb-6 font-orbitron">
               <span className="w-1.5 h-1.5 rounded-full bg-electric-cyan blink" />
               <Crosshair size={14} className="text-electric-cyan" />
               <span className="text-xs font-bold text-electric-cyan tracking-widest uppercase">
@@ -229,7 +305,8 @@ function Hero() {
               </span>
             </div>
 
-            <h1 className="text-5xl md:text-6xl xl:text-7xl font-black tracking-tight leading-[0.95] mb-6">
+            {/* Heading */}
+            <h1 className="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[0.95] mb-8">
               暗闇の敵が、
               <br />
               <span className="text-electric-cyan text-glow-cyan">
@@ -237,66 +314,53 @@ function Hero() {
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-white/60 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              ゲームの起動を自動検知し、NVIDIAディスプレイ設定を瞬時に最適化。
-              デジタルバイブランス・明るさ・コントラストをゲーム別に自動切り替え。
-              終了後は
-              <strong className="text-white">あなたの元の設定に完璧復元</strong>
-              します。
+            {/* Subtext — Discord式: 見出しの30〜40%サイズ、明確な階層差 */}
+            <p className="text-base md:text-lg text-white/50 max-w-md mx-auto lg:mx-0 leading-[1.75] mb-10">
+              ゲームを起動するたびに、NVIDIAコントロールパネルで
+              スライダーを動かしていませんか？
+              その手間、もう不要です。起動を自動検知し、ゲーム別のプロファイルを瞬時に適用。
+              終了後は<strong className="text-white/80 font-semibold">あなたの元の設定に完璧復元</strong>します。
             </p>
 
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 md:gap-8 mt-8 text-sm">
-              <div className="flex items-center gap-2 text-white/40">
-                <Shield size={16} className="text-juicy-green" />
+            {/* Trust badges — 説明文の下、控えめに */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 text-xs text-white/30">
+              <div className="flex items-center gap-1.5">
+                <Shield size={13} className="text-juicy-green/70" />
                 <span>安全設計</span>
               </div>
-              <div className="hidden sm:block w-px h-4 bg-white/10" />
-              <div className="flex items-center gap-2 text-white/40">
-                <Cpu size={16} className="text-juicy-green" />
+              <div className="hidden sm:block w-px h-3 bg-white/10" />
+              <div className="flex items-center gap-1.5">
+                <Cpu size={13} className="text-juicy-green/70" />
                 <span>CPU負荷 0.1%未満</span>
               </div>
-              <div className="hidden sm:block w-px h-4 bg-white/10" />
-              <div className="flex items-center gap-2 text-white/40">
-                <Zap size={16} className="text-juicy-green" />
+              <div className="hidden sm:block w-px h-3 bg-white/10" />
+              <div className="flex items-center gap-1.5">
+                <Zap size={13} className="text-juicy-green/70" />
                 <span>完全自動</span>
               </div>
             </div>
           </div>
 
-          {/* Right: Before/After monitor（透過素材・枠なし） */}
-          <div className="flex-1 flex items-center justify-center lg:justify-end">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/hero-monitor.png"
-              alt="GameVision Tuner — Before/After 比較。左は暗く敵が見えない画面、右はデジタルバイブランス適用後の鮮明な画面"
-              width={700}
-              height={450}
-              className="w-full max-w-[600px] xl:max-w-[700px] h-auto"
-            />
+          {/* Right: Discord風フレーム内に動画 — 60% */}
+          <div className="w-full lg:flex-[3] min-w-0">
+            <HeroVideoFrame />
           </div>
         </div>
 
-        {/* 2行目: CTA（文章と画像の下） */}
-        <div className="flex flex-col sm:flex-row items-center gap-4">
+        {/* CTA — 2カラムの下、画面中央 */}
+        <div className="flex justify-center mt-32">
           <a
             href={DOWNLOAD_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,195,255,0.3)]"
+            className="group flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-10 py-4 rounded-xl font-black text-base hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,195,255,0.3)]"
           >
-            <Download size={20} />
-            近日公開
+            <Download size={18} />
+            無料ダウンロード
             <ExternalLink
-              size={16}
+              size={14}
               className="opacity-50 group-hover:opacity-100 transition-opacity"
             />
-          </a>
-          <a
-            href="#features"
-            className="flex items-center gap-2 text-white/60 hover:text-white px-6 py-4 transition-colors font-bold"
-          >
-            詳しく見る
-            <ChevronDown size={16} className="animate-bounce" />
           </a>
         </div>
       </div>
@@ -371,14 +435,6 @@ function PainPoints() {
           ))}
         </div>
 
-        <div className="text-center mt-12 scroll-fade-in">
-          <p className="text-2xl md:text-3xl font-black">
-            その悩み、
-            <span className="text-electric-cyan text-glow-cyan">
-              全部解決します。
-            </span>
-          </p>
-        </div>
       </div>
     </section>
   )
@@ -390,22 +446,16 @@ function PainPoints() {
 function Features() {
   const features = [
     {
-      icon: Sliders,
-      title: 'ゲーム別プロファイル',
-      description:
-        'ゲームごとに最適な明るさ・コントラスト・ガンマ・デジタルバイブランスを保存。一度設定すれば永久に記憶。',
-    },
-    {
       icon: RefreshCw,
       title: '完全自動切り替え',
       description:
         'Steamのゲーム起動を自動検知し、保存済みプロファイルを瞬時に適用。手動操作は一切不要。',
     },
     {
-      icon: RotateCcw,
-      title: 'パーフェクト復元',
+      icon: Sliders,
+      title: 'ゲーム別プロファイル',
       description:
-        '初期値（50%）に戻すのではなく、あなたが普段使っている「いつもの設定」を記憶して完璧に復元。',
+        'ゲームごとに最適な明るさ・コントラスト・ガンマ・デジタルバイブランスを保存。一度設定すれば永久に記憶。',
     },
     {
       icon: Gauge,
@@ -414,10 +464,16 @@ function Features() {
         'CPU負荷0.1%未満。バックグラウンドで動作してもFPSに影響ゼロ。ゲーミングPCの邪魔はしません。',
     },
     {
-      icon: Rocket,
-      title: 'ワンクリック起動',
+      icon: Gamepad2,
+      title: 'Steamライブラリ自動検出',
       description:
-        '「GO!」ボタンひとつで設定適用→ゲーム起動まで一直線。面倒なステップはゼロ。',
+        'インストール済みのSteamゲームを自動スキャン。タイトルを選ぶだけで登録完了。パスの入力やID設定は一切不要。',
+    },
+    {
+      icon: Rocket,
+      title: 'Windows起動時に自動スタート',
+      description:
+        'PCを起動したら即バックグラウンドで待機。ゲームを立ち上げた瞬間から自動適用。設定後は完全に忘れてOK。',
     },
     {
       icon: Shield,
@@ -437,18 +493,12 @@ function Features() {
       <div className="absolute inset-0 bg-gradient-to-b from-[#060F1F] via-transparent to-[#060F1F] pointer-events-none" />
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-16 scroll-fade-in">
-          <div className="inline-flex items-center gap-2 bg-juicy-green/10 border border-juicy-green/20 rounded-full px-4 py-1.5 mb-4">
-            <Sparkles size={14} className="text-juicy-green" />
-            <span className="text-xs font-bold text-juicy-green tracking-wider">
-              FEATURES
-            </span>
-          </div>
           <h2 className="text-3xl md:text-4xl font-black mb-4">
-            すべてを自動化する、
-            <span className="text-electric-cyan">6つの機能</span>
+            GameVision Tunerが、
+            <span className="text-electric-cyan">全て解決します。</span>
           </h2>
           <p className="text-white/50 max-w-xl mx-auto">
-            GameVision Tunerがディスプレイ設定を完全に管理します
+            すべてを自動化する、6つの機能
           </p>
         </div>
 
@@ -474,6 +524,29 @@ function Features() {
 }
 
 /* ─────────────────────────────────────────────
+   Mid CTA（Features後）
+   ───────────────────────────────────────────── */
+function MidCTA() {
+  return (
+    <section className="py-12 px-6">
+      <div className="max-w-2xl mx-auto text-center scroll-fade-in">
+        <p className="text-white/50 text-sm mb-4">まずは無料で試してみませんか？</p>
+        <a
+          href={DOWNLOAD_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(0,195,255,0.2)]"
+        >
+          <Download size={20} />
+          無料ダウンロード
+        </a>
+        <p className="mt-3 text-xs text-white/20">Windows 10/11 | NVIDIA GPU 専用</p>
+      </div>
+    </section>
+  )
+}
+
+/* ─────────────────────────────────────────────
    How It Works（使い方 3ステップ）
    ───────────────────────────────────────────── */
 function HowItWorks() {
@@ -481,9 +554,9 @@ function HowItWorks() {
     {
       num: '01',
       badge: 'GAME LIBRARY',
-      title: 'ゲームを登録するだけ。\nあとはすべて自動。',
+      title: 'Steamから検出した\nゲームをアプリに登録。',
       description:
-        'インストール済みのSteamゲームを自動でスキャン。お気に入りのFPSタイトルをワンクリックで追加するだけ。面倒なパス設定やID入力は一切不要です。',
+        'インストール済みのSteamゲームを自動でスキャン。一覧から登録したいタイトルを選ぶだけ。面倒なパス設定やID入力は一切不要です。',
       icon: Gamepad2,
       image: '/images/step-add-game.png',
       imageAlt: 'ゲームライブラリからタイトルを選んで追加する画面',
@@ -491,7 +564,7 @@ function HowItWorks() {
     {
       num: '02',
       badge: 'SETTINGS',
-      title: '直感的なスライダーで\n完璧な設定を保存。',
+      title: '直感的なスライダーで\n個別に完璧な設定を保存。',
       description:
         '明るさ・コントラスト・ガンマ・デジタルバイブランスを直感的に調整。リアルタイムにプレビューしながら、あなただけの最強プロファイルを作成して保存します。',
       icon: Sliders,
@@ -501,7 +574,7 @@ function HowItWorks() {
     {
       num: '03',
       badge: 'AUTO SWITCH',
-      title: '起動で自動適用、\n終了で自動復元。',
+      title: 'ゲーム\n起動で自動適用、\n終了で自動復元。',
       description:
         'ゲームの起動を自動検知し、保存済みプロファイルを瞬時に適用。終了後はあなたの元のデスクトップ設定に完璧復元。一度設定したら、あとは忘れてOK。',
       icon: Zap,
@@ -513,7 +586,7 @@ function HowItWorks() {
   return (
     <section id="how-it-works" className="py-24 px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-20 scroll-fade-in">
+        <div className="text-center mb-16 scroll-fade-in">
           <h2 className="text-3xl md:text-4xl font-black mb-4">
             使い方は、
             <span className="text-juicy-green">たったの3ステップ</span>
@@ -521,47 +594,77 @@ function HowItWorks() {
           <p className="text-white/50">シンプルだから、すぐ使える</p>
         </div>
 
-        <div className="space-y-24">
+        <div className="space-y-20">
           {steps.map((step, i) => (
             <div
               key={i}
-              className={`scroll-fade-in flex flex-col ${
-                i % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'
-              } items-center gap-10 lg:gap-16`}
+              className="scroll-fade-in rounded-3xl p-8 md:p-12 transition-all duration-300 hover:shadow-[0_12px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(0,195,255,0.07)]"
+              style={{
+                background: 'linear-gradient(135deg, rgba(13,31,56,0.9) 0%, rgba(8,15,30,0.95) 100%)',
+                border: '1px solid rgba(0,195,255,0.14)',
+                boxShadow: '0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)',
+              }}
             >
-              {/* Text */}
-              <div className="flex-1 text-center lg:text-left relative">
-                <span className="absolute -top-6 left-0 text-[120px] font-orbitron font-black text-electric-cyan/[0.05] leading-none select-none pointer-events-none hidden lg:block">
-                  {step.num}
-                </span>
-                <div className="relative">
-                  <div className="flex items-center gap-3 mb-5 justify-center lg:justify-start">
-                    <div className="relative inline-flex items-center justify-center w-12 h-12 bg-white/[0.04] border border-white/[0.08] card-angled shrink-0">
-                      <step.icon size={22} className="text-electric-cyan" />
-                      <span className="absolute -top-2 -right-2 font-orbitron w-5 h-5 rounded-none bg-juicy-green text-[#060F1F] text-[10px] font-black flex items-center justify-center">
-                        {step.num.slice(-1)}
+              <div className={`flex flex-col gap-8 lg:gap-12 ${i % 2 === 1 ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center`}>
+
+                {/* テキストエリア */}
+                <div className="lg:flex-[2] relative overflow-hidden py-4">
+                  <span
+                    className="absolute -bottom-6 -right-4 font-orbitron font-black leading-none select-none pointer-events-none"
+                    style={{ fontSize: '10rem', color: 'rgba(0,195,255,0.06)' }}
+                    aria-hidden="true"
+                  >
+                    {step.num}
+                  </span>
+                  <div className="relative">
+                    {/* バッジ */}
+                    <div className="flex items-center gap-3 mb-8">
+                      <div
+                        className="relative inline-flex items-center justify-center w-11 h-11 card-angled shrink-0"
+                        style={{
+                          background: 'rgba(0,195,255,0.10)',
+                          border: '1px solid rgba(0,195,255,0.25)',
+                        }}
+                      >
+                        <step.icon size={19} className="text-electric-cyan" />
+                        <span className="absolute -top-2 -right-2 font-orbitron w-5 h-5 bg-juicy-green text-[#060F1F] text-[10px] font-black flex items-center justify-center shadow-[0_0_8px_rgba(0,255,136,0.5)]">
+                          {step.num.slice(-1)}
+                        </span>
+                      </div>
+                      <span className="text-[11px] font-bold tracking-[0.2em] uppercase text-electric-cyan/50">
+                        {step.badge}
                       </span>
                     </div>
-                    <span className="text-xs font-bold text-white/30 tracking-widest">
-                      {step.badge}
-                    </span>
+                    {/* 見出し */}
+                    <h3 className="text-2xl md:text-3xl font-black leading-tight mb-6 whitespace-pre-line">
+                      {step.title}
+                    </h3>
+                    {/* 説明 */}
+                    <p className="text-white/50 leading-[1.85] text-sm md:text-base">
+                      {step.description}
+                    </p>
                   </div>
-                  <h3 className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight mb-5 whitespace-pre-line">
-                    {step.title}
-                  </h3>
-                  <p className="text-white/50 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                    {step.description}
-                  </p>
                 </div>
-              </div>
 
-              {/* Image */}
-              <div className="flex-1 w-full">
-                <div className="relative">
-                  <div className="absolute -inset-4 bg-electric-cyan/[0.04] blur-2xl rounded-3xl pointer-events-none" aria-hidden="true" />
+                {/* 画像エリア */}
+                <div
+                  className="lg:flex-[3] w-full rounded-2xl overflow-hidden min-h-[240px] md:min-h-[340px]"
+                  style={{
+                    background: '#060d1a',
+                    border: '1px solid rgba(0,195,255,0.12)',
+                    boxShadow: 'inset 0 0 40px rgba(0,0,0,0.4), 0 0 20px rgba(0,0,0,0.3)',
+                  }}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={step.image} alt={step.imageAlt} width={600} height={340} className="relative w-full rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/40" />
+                  <img
+                    src={step.image}
+                    alt={step.imageAlt}
+                    width={720}
+                    height={400}
+                    className="w-full h-full object-cover opacity-90"
+                  />
                 </div>
+
               </div>
             </div>
           ))}
@@ -860,7 +963,7 @@ function FinalCTA() {
           className="inline-flex items-center gap-3 bg-electric-cyan text-[#060F1F] px-10 py-5 rounded-xl font-black text-xl hover:scale-105 transition-transform shadow-[0_0_40px_rgba(0,195,255,0.3)]"
         >
           <Download size={24} />
-          近日公開
+          無料ダウンロード
         </a>
 
         <p className="mt-6 text-xs text-white/30">
@@ -918,6 +1021,7 @@ export default function LandingPage() {
         <Hero />
         <PainPoints />
         <Features />
+        <MidCTA />
         <HowItWorks />
         <GameShowcase />
         <Pricing />
