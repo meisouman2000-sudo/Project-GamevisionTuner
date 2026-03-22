@@ -56,6 +56,7 @@
   "publish": {
     "provider": "github",
     "owner": "meisouman2000-sudo",
-    "repo": "Project-GamevisionTuner"
+    "repo": "Project-GamevisionTuner",
+    "draft": false
   }
 }

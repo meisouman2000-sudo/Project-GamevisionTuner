@@ -56,8 +56,17 @@ export default defineConfig({
     react(),
     electron({
       main: {
-        // Shortcut of `build.lib.entry`.
         entry: 'electron/main.ts',
+        vite: {
+          define: {
+            'process.env.SUPABASE_URL': JSON.stringify(process.env.SUPABASE_URL ?? ''),
+            'process.env.SUPABASE_ANON_KEY': JSON.stringify(process.env.SUPABASE_ANON_KEY ?? ''),
+            'process.env.STRIPE_MONTHLY_PRICE_ID': JSON.stringify(process.env.STRIPE_MONTHLY_PRICE_ID ?? ''),
+            'process.env.STRIPE_YEARLY_PRICE_ID': JSON.stringify(process.env.STRIPE_YEARLY_PRICE_ID ?? ''),
+            'process.env.CHECKOUT_SUCCESS_URL': JSON.stringify(process.env.CHECKOUT_SUCCESS_URL ?? ''),
+            'process.env.CHECKOUT_CANCEL_URL': JSON.stringify(process.env.CHECKOUT_CANCEL_URL ?? ''),
+          },
+        },
       },
       preload: {
         // Shortcut of `build.rollupOptions.input`.

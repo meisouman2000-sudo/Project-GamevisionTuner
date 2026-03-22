@@ -1,14 +1,15 @@
 {
   "name": "game-vision-tuner",
   "private": true,
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Game display settings manager for NVIDIA GPUs",
   "author": "meisouman2000-sudo",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
-    "release": "tsc && vite build && electron-builder --publish always",
+    "verify": "node scripts/verify-build.mjs",
+    "release": "tsc && vite build && node scripts/verify-build.mjs && electron-builder --publish always",
     "build:lp": "cd lp && npm run build && if not exist ..\\public\\lp mkdir ..\\public\\lp && xcopy /E /I /Y out\\* ..\\public\\lp\\",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
