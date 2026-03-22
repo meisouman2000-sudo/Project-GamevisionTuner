@@ -560,6 +560,7 @@ function HowItWorks() {
       icon: Gamepad2,
       image: '/images/step-add-game.png',
       imageAlt: 'ゲームライブラリからタイトルを選んで追加する画面',
+      scale: true,
     },
     {
       num: '02',
@@ -570,6 +571,7 @@ function HowItWorks() {
       icon: Sliders,
       image: '/images/step-adjust.png',
       imageAlt: 'ディスプレイ設定スライダーを操作してプロファイルを保存する画面',
+      scale: true,
     },
     {
       num: '03',
@@ -647,21 +649,15 @@ function HowItWorks() {
                 </div>
 
                 {/* 画像エリア */}
-                <div
-                  className="lg:flex-[3] w-full rounded-2xl overflow-hidden min-h-[240px] md:min-h-[340px]"
-                  style={{
-                    background: '#060d1a',
-                    border: '1px solid rgba(0,195,255,0.12)',
-                    boxShadow: 'inset 0 0 40px rgba(0,0,0,0.4), 0 0 20px rgba(0,0,0,0.3)',
-                  }}
-                >
+                <div className="lg:flex-[3] w-full flex items-center justify-center min-h-[480px] overflow-visible">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={step.image}
                     alt={step.imageAlt}
                     width={720}
                     height={400}
-                    className="w-full h-full object-cover opacity-90"
+                    className="w-full h-auto object-contain"
+                    style={step.scale ? { transform: 'scale(2)', transformOrigin: 'center' } : undefined}
                   />
                 </div>
 
