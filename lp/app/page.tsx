@@ -348,7 +348,7 @@ function Hero() {
         </div>
 
         {/* CTA — 2カラムの下、画面中央 */}
-        <div className="flex justify-center mt-12">
+        <div className="flex justify-center mt-20">
           <a
             href={DOWNLOAD_URL}
             target="_blank"
