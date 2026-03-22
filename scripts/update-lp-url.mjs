@@ -31,10 +31,18 @@ const updated = content.replace(
   `const DOWNLOAD_URL = '${newUrl}'`
 );
 
+import { execSync } from 'node:child_process';
+
 if (content === updated) {
   console.log(`ℹ️  DOWNLOAD_URL は既に最新です: ${newUrl}`);
 } else {
   fs.writeFileSync(lpPagePath, updated, 'utf-8');
   console.log(`✅ DOWNLOAD_URL を更新しました:`);
   console.log(`   ${newUrl}`);
+
+  // git commit & push（Vercel自動デプロイを起動）
+  execSync(`git add "${lpPagePath}"`, { cwd: root, stdio: 'inherit' });
+  execSync(`git commit -m "lp: update download URL to v${version}"`, { cwd: root, stdio: 'inherit' });
+  execSync(`git push origin main`, { cwd: root, stdio: 'inherit' });
+  console.log(`✅ LP変更をプッシュしました（Vercelが自動デプロイします）`);
 }
