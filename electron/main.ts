@@ -418,6 +418,10 @@ ipcMain.handle('open-external-url', async (_event, url: string) => {
   return true;
 })
 
+ipcMain.handle('install-update', () => {
+  autoUpdater.quitAndInstall();
+})
+
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
@@ -508,6 +512,9 @@ app.whenReady().then(async () => {
 
   // 自動アップデート（パッケージ済みビルドのみ）
   if (app.isPackaged) {
+    autoUpdater.on('update-downloaded', () => {
+      win?.webContents.send('update-downloaded');
+    });
     autoUpdater.checkForUpdatesAndNotify();
   }
 })

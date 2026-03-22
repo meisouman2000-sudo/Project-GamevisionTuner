@@ -25,7 +25,7 @@
 
 const STEAM_URL =
   'https://store.steampowered.com/app/XXXXXX/GameVision_Tuner/'
-const DOWNLOAD_URL = 'https://github.com/meisouman2000-sudo/Project-GamevisionTuner/releases/download/v0.0.6/GameVision-Tuner-Windows-0.0.6-Setup.exe'
+const DOWNLOAD_URL = 'https://github.com/meisouman2000-sudo/Project-GamevisionTuner/releases/download/v0.0.8/GameVision-Tuner-Windows-0.0.8-Setup.exe'
 
 const HERO_PARTICLES = [
   { x: 8, y: 15, size: 3, delay: 0, duration: 14 },

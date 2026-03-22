@@ -61,5 +61,7 @@ interface Window {
         createCheckoutSession: (interval: string) => Promise<{ url: string | null; error?: string }>;
         createPortalSession: () => Promise<{ url: string | null; error?: string }>;
         openExternalUrl: (url: string) => Promise<boolean>;
+        installUpdate: () => Promise<void>;
+        onUpdateDownloaded: (callback: () => void) => (() => void);
     }
 }

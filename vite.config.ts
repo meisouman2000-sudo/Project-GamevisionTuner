@@ -3,6 +3,10 @@ import path from 'node:path'
 import fs from 'node:fs'
 import electron from 'vite-plugin-electron/simple'
 import react from '@vitejs/plugin-react'
+import { config as loadDotenv } from 'dotenv'
+
+// .env を読み込んでビルド時に環境変数を確定させる
+loadDotenv({ path: path.join(__dirname, '.env') })
 
 // /lp と /lp/ で public/lp/index.html を返す（メインアプリのSPAフォールバックを避ける）
 function serveLpIndex() {
@@ -37,6 +41,16 @@ function serveLpIndex() {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // ビルド時に process.env の値を文字列としてインライン化
+  // → パッケージ済みexeでも .env ファイルなしで動作する
+  define: {
+    'process.env.SUPABASE_URL': JSON.stringify(process.env.SUPABASE_URL ?? ''),
+    'process.env.SUPABASE_ANON_KEY': JSON.stringify(process.env.SUPABASE_ANON_KEY ?? ''),
+    'process.env.STRIPE_MONTHLY_PRICE_ID': JSON.stringify(process.env.STRIPE_MONTHLY_PRICE_ID ?? ''),
+    'process.env.STRIPE_YEARLY_PRICE_ID': JSON.stringify(process.env.STRIPE_YEARLY_PRICE_ID ?? ''),
+    'process.env.CHECKOUT_SUCCESS_URL': JSON.stringify(process.env.CHECKOUT_SUCCESS_URL ?? ''),
+    'process.env.CHECKOUT_CANCEL_URL': JSON.stringify(process.env.CHECKOUT_CANCEL_URL ?? ''),
+  },
   plugins: [
     serveLpIndex(),
     react(),

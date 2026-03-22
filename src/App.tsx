@@ -24,7 +24,6 @@ function AppContent() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [currentProfile, setCurrentProfile] = useState<any>(null);
-  const [launchingGameId, setLaunchingGameId] = useState<string | null>(null);
 
   // Track which games have saved profiles (gameId → true)
   const [savedProfileIds, setSavedProfileIds] = useState<Set<string>>(new Set());
@@ -38,6 +37,7 @@ function AppContent() {
   const [gameLimit, setGameLimit] = useState(1);
   const [isSubModalOpen, setIsSubModalOpen] = useState(false);
   const [isUpgradePromptOpen, setIsUpgradePromptOpen] = useState(false);
+  const [updateReady, setUpdateReady] = useState(false);
 
   const { language, setLanguage } = useLanguage();
   const t = useT();
@@ -73,6 +73,14 @@ function AppContent() {
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
+  }, []);
+
+  // アップデートダウンロード完了を検知
+  useEffect(() => {
+    const cleanup = window.gameVisionAPI?.onUpdateDownloaded?.(() => {
+      setUpdateReady(true);
+    });
+    return () => cleanup?.();
   }, []);
 
   const refreshSavedProfiles = useCallback(async (games: Game[]) => {
@@ -142,45 +150,6 @@ function AppContent() {
     return cleanup;
   }, []);
 
-  const handlePlay = async (gameId: string) => {
-    if (launchingGameId) return; // Prevent double click
-
-    console.log("Playing", gameId);
-    setLaunchingGameId(gameId);
-
-    // Min wait time for UI feedback
-    const minWait = new Promise(r => setTimeout(r, 1500));
-
-    if (window.gameVisionAPI) {
-      try {
-        // Find game for installDir
-        const game = allGames.find(g => g.id === gameId);
-
-        // 1. Load Profile
-        const profile = await window.gameVisionAPI.loadProfile(gameId);
-
-        // 2. Apply Settings (if profile exists)
-        if (profile) {
-          console.log("Applying game profile:", profile);
-          await window.gameVisionAPI.applySettings(profile);
-        } else {
-          console.log("No profile found, proceeding with current/default settings.");
-        }
-
-        // 3. Launch Game (pass installDir for auto-restore monitoring)
-        const result = await window.gameVisionAPI.launchGame(gameId, game?.installDir);
-        if (result && !result.success) {
-          alert(`${t('launchFailed')}: ${result.error || 'Unknown error'}`);
-        }
-      } catch (error) {
-        console.error("Launch error:", error);
-        alert(t('launchFailed'));
-      }
-    }
-
-    await minWait;
-    setLaunchingGameId(null);
-  }
 
   const handleSettings = async (gameId: string) => {
     console.log("Settings", gameId);
@@ -297,6 +266,17 @@ function AppContent() {
   return (
     <div className="h-screen bg-deep-navy text-white overflow-hidden flex flex-col selection:bg-electric-cyan selection:text-deep-navy">
       <TitleBar />
+      {updateReady && (
+        <div className="flex items-center justify-between px-5 py-2.5 bg-electric-cyan/10 border-b border-electric-cyan/20 shrink-0">
+          <span className="text-sm text-electric-cyan font-medium">アップデートの準備ができました</span>
+          <button
+            onClick={() => window.gameVisionAPI?.installUpdate?.()}
+            className="text-xs font-bold px-3 py-1 bg-electric-cyan text-deep-navy rounded-lg hover:bg-electric-cyan/80 transition-colors"
+          >
+            再起動してインストール
+          </button>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto p-8 relative">
         {/* Header */}
         <header className="flex justify-between items-center mb-10 px-2">
@@ -389,9 +369,7 @@ function AppContent() {
                   key={game.id}
                   {...game}
                   profileName={savedProfileIds.has(game.id) ? t('profileConfigured') : undefined}
-                  isLaunching={launchingGameId === game.id}
                   locked={authState.subscription.plan !== 'pro' && index >= gameLimit}
-                  onPlay={() => handlePlay(game.id)}
                   onSettings={() => handleSettings(game.id)}
                   onRemove={() => handleRemoveGame(game.id)}
                   onResetToDefault={() => handleResetGameToDefault(game.id)}

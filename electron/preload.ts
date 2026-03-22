@@ -51,4 +51,10 @@ contextBridge.exposeInMainWorld('gameVisionAPI', {
   createCheckoutSession: (interval: string) => ipcRenderer.invoke('create-checkout-session', interval),
   createPortalSession: () => ipcRenderer.invoke('create-portal-session'),
   openExternalUrl: (url: string) => ipcRenderer.invoke('open-external-url', url),
+  installUpdate: () => ipcRenderer.invoke('install-update'),
+  onUpdateDownloaded: (callback: () => void) => {
+    const handler = () => callback();
+    ipcRenderer.on('update-downloaded', handler);
+    return () => ipcRenderer.removeListener('update-downloaded', handler);
+  },
 })
