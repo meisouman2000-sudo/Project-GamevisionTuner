@@ -560,7 +560,7 @@ function HowItWorks() {
       icon: Gamepad2,
       image: '/images/step-add-game.png',
       imageAlt: 'ゲームライブラリからタイトルを選んで追加する画面',
-      scale: true,
+      scale: 2,
     },
     {
       num: '02',
@@ -571,7 +571,7 @@ function HowItWorks() {
       icon: Sliders,
       image: '/images/step-adjust.png',
       imageAlt: 'ディスプレイ設定スライダーを操作してプロファイルを保存する画面',
-      scale: true,
+      scale: 2,
     },
     {
       num: '03',
@@ -582,6 +582,7 @@ function HowItWorks() {
       icon: Zap,
       image: '/images/step-auto.png',
       imageAlt: 'ゲーム起動→設定適用→終了→復元の自動フロー図',
+      scale: 1.5,
     },
   ]
 
@@ -657,7 +658,7 @@ function HowItWorks() {
                     width={720}
                     height={400}
                     className="w-full h-auto object-contain"
-                    style={step.scale ? { transform: 'scale(2)', transformOrigin: 'center' } : undefined}
+                    style={step.scale ? { transform: `scale(${step.scale})`, transformOrigin: 'center' } : undefined}
                   />
                 </div>
 
@@ -796,10 +797,6 @@ function Pricing() {
                 <X size={16} className="text-white/20 shrink-0" />
                 <span className="text-white/25">複数ゲーム対応</span>
               </li>
-              <li className="flex items-center gap-3 text-sm">
-                <X size={16} className="text-white/20 shrink-0" />
-                <span className="text-white/25">優先サポート</span>
-              </li>
             </ul>
 
             <a
@@ -859,13 +856,6 @@ function Pricing() {
                 <span className="text-white/90 font-bold">
                   複数ゲーム対応（無制限）
                 </span>
-              </li>
-              <li className="flex items-center gap-3 text-sm">
-                <Check
-                  size={16}
-                  className="text-electric-cyan shrink-0"
-                />
-                <span className="text-white/90 font-bold">優先サポート</span>
               </li>
             </ul>
 

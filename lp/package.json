@@ -9,20 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "clsx": "latest",
+    "lucide-react": "latest",
     "next": "latest",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "lucide-react": "latest",
-    "clsx": "latest",
     "tailwind-merge": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "typescript": "latest",
-    "tailwindcss": "^3.4.0",
+    "autoprefixer": "latest",
+    "playwright": "^1.58.2",
     "postcss": "latest",
-    "autoprefixer": "latest"
+    "tailwindcss": "^3.4.0",
+    "typescript": "latest"
   }
 }
