@@ -267,7 +267,7 @@ function Navbar() {
    ───────────────────────────────────────────── */
 function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center pt-16 pb-24 overflow-hidden">
+    <section className="relative h-screen flex flex-col justify-center pt-16 pb-8 overflow-hidden">
       {/* Dot grid texture */}
       <div className="absolute inset-0 dot-grid opacity-70" aria-hidden="true" />
       {/* Scanning line */}
@@ -348,7 +348,7 @@ function Hero() {
         </div>
 
         {/* CTA — 2カラムの下、画面中央 */}
-        <div className="flex justify-center mt-32">
+        <div className="flex justify-center mt-12">
           <a
             href={DOWNLOAD_URL}
             target="_blank"
